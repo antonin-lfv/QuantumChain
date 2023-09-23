@@ -155,39 +155,6 @@
         Scripts
     ***********************************-->
 	{% include 'javascript_includes.html' %}
-
-	<script>
-		function updateTable(miners) {
-		  let tableBody = $('#empoloyees-tblwrapper tbody');
-		  tableBody.empty(); // Videz le tableau existant
-	  
-		  miners.forEach((miner) => {
-			tableBody.append(`
-			  <tr>
-				<td>
-				  <div class="products">
-					<div>
-					  <h6>${miner.name}</h6>
-					  <span>Miner</span>
-					</div>
-				  </div>
-				</td>
-				<td><span>${miner.tokens}</span></td>
-				<td><span>${miner.nb_blocks_mined}</span></td>
-				<td><span class="badge badge-success light border-0">Active</span></td>
-			  </tr>
-			`);
-		  });
-		}
-	  
-		function fetchMiners() {
-		  $.get("/get_miners", function(data) {
-			updateTable(data.miners);
-		  });
-		}
-	  
-		setInterval(fetchMiners, 2500); // Met à jour toutes les 5 secondes
-	  </script>
 	
 	
 </body>

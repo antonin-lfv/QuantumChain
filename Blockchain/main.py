@@ -7,6 +7,7 @@ def create_and_start_miners(num_miners, blockchain):
     threads = []
 
     for i in range(num_miners):
+        print(f"Creating miner {i+1}")
         miner_name = f"Miner{i+1}"
         miner = Miner(blockchain, miner_name)
         miners.append(miner)
