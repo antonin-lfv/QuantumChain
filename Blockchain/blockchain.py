@@ -120,6 +120,7 @@ class Blockchain:
         for miner in miners_data:
             if miner['name'] == miner_name:
                 miner['tokens'] += tokens
+                miner['tokens'] = round(miner['tokens'], 3)
                 miner['nb_blocks_mined'] += blocks_mined
                 break
         else:

@@ -222,7 +222,7 @@ let dataSet = [
 		'dom': 'ZBfrltip',
 		buttons: [
             
-			{ extend: 'excel', text: '<i class="fa-solid fa-file-excel"></i> Export Report',
+			{ extend: 'excel', text: '<i class="fa-solid fa-file-excel"></i> Export Miners',
               className: 'btn btn-sm border-0'
 			}
         ],
