@@ -1,3 +1,0 @@
-class CONFIG:
-    REWARD_TOKEN = 6
-    STARTWITH_HASH = '00000'

@@ -6,4 +6,8 @@ BLP_general = Blueprint('BLP_general', __name__,
 
 @BLP_general.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('index.html', title='Dashboard')
+
+@BLP_general.route('/miners')
+def miners():
+    return render_template('miners.html', title='Miners')
