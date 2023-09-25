@@ -23,7 +23,8 @@ def create_and_start_miners(num_miners, blockchain):
 
 
 if __name__ == "__main__":
-    num_miners = int(input("Enter the number of miners: "))  # Or set this number some other way
+    # num_miners = int(input("Enter the number of miners: "))  # Or set this number some other way
+    num_miners = 5
     blockchain = Blockchain()
 
     miners, threads = create_and_start_miners(num_miners, blockchain)

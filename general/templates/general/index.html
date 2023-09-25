@@ -77,7 +77,96 @@
 			</div>
 			<div class="container-fluid">
 				<div class="row">
-					
+                    <div class="col-xl-3  col-lg-6 col-sm-6">
+						<div class="widget-stat card">
+							<div class="card-body p-4">
+								<div class="media ai-icon">
+									<span class="me-3 bgl-primary text-primary">
+										<!-- <i class="ti-user"></i> -->
+										<svg id="icon-customers" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user">
+											<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+											<circle cx="12" cy="7" r="4"></circle>
+										</svg>
+									</span>
+									<div class="media-body">
+										<p class="mb-1">Miners</p>
+										<h4 class="mb-0">{{number_miners}}</h4>
+									</div>
+								</div>
+							</div>
+						</div>
+                    </div>
+					<div class="col-xl-3  col-lg-6 col-sm-6">
+                        <div class="widget-stat card">
+							<div class="card-body p-4">
+								<div class="media ai-icon">
+									<span class="me-3 bgl-success text-success">
+										<svg id="icon-database-widget" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-database">
+											<ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+											<path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+											<path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+										</svg>
+									</span>
+									<div class="media-body">
+										<p class="mb-1">Blocks</p>
+										<h4 class="mb-0">{{number_blocks}}</h4>
+									</div>
+								</div>
+							</div>
+						</div>
+                    </div>
+                    <div class="col-xl-3  col-lg-6 col-sm-6">
+                        <div class="widget-stat card">
+							<div class="card-body  p-4">
+								<div class="media ai-icon">
+									<span class="me-3 bgl-danger text-danger">
+										<svg id="icon-revenue" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-dollar-sign">
+											<line x1="12" y1="1" x2="12" y2="23"></line>
+											<path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+										</svg>
+									</span>
+									<div class="media-body">
+										<p class="mb-1">Reward per block</p>
+										<h4 class="mb-0">{{reward_per_block}}</h4>
+									</div>
+								</div>
+							</div>
+						</div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-responsive-md">
+                            <h1>Last 10 blocks</h1>
+                            <thead>
+                                <tr>
+                                    <th><strong>ID</strong></th>
+                                    <th><strong>HASH</strong></th>
+                                    <th><strong>NONCE</strong></th>
+                                    <th><strong>START_TIME</strong></th>
+                                    <th><strong>END_TIME</strong></th>
+                                    <th><strong>MINER</strong></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {%for block_data in data[::-1] %}
+                                <tr>
+                                    <td><strong>{{block_data["index"]}}</strong></td>
+                                    <td>{{block_data["hash"]}}</td>
+                                    <td>{{block_data["nonce"]}}</td>
+                                    <td>{{block_data["start_time"]}}</td>
+                                    <td>{{block_data["end_time"]}}</td>
+                                    <td>
+                                        {% if block_data["miner"] %}
+                                            {{ block_data["miner"] }}
+                                        {% else %}
+                                            <strong>None</strong>
+                                        {% endif %}
+                                    </td>                                
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
 				</div>
 			
 			</div>

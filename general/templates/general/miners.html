@@ -85,7 +85,7 @@
 								<div class="tbl-caption">
 									<h4 class="heading mb-0">Miners</h4>
 									<div>
-										<a class="btn btn-primary btn-sm" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">+ Add Miner</a>
+										<a class="btn btn-primary btn-sm" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" id="updateTableButton" aria-controls="offcanvasExample">Update</a>
 									</div>
 								</div>
 									<table id="empoloyees-tblwrapper" class="table">
@@ -155,6 +155,45 @@
         Scripts
     ***********************************-->
 	{% include 'javascript_includes.html' %}
+
+	<script>
+		// Fonction pour mettre à jour le tableau
+		function updateTable(miners) {
+			let tableBody = $('#empoloyees-tblwrapper tbody');
+			tableBody.empty(); // Videz le tableau existant
+		
+			miners.forEach((miner) => {
+			tableBody.append(`
+				<tr>
+				<td>
+					<div class="products">
+					<div>
+						<h6>${miner.name}</h6>
+						<span>Miner</span>
+					</div>
+					</div>
+				</td>
+				<td><span>${miner.tokens}</span></td>
+				<td><span>${miner.nb_blocks_mined}</span></td>
+				<td><span class="badge badge-success light border-0">Active</span></td>
+				</tr>
+			`);
+			});
+		}
+		
+		// Fonction pour récupérer les données
+		function fetchMiners() {
+			$.get("/get_miners", function(data) {
+			updateTable(data.miners);
+			});
+		}
+		
+		// Ajout d'un gestionnaire d'événements pour le bouton
+		$("#updateTableButton").click(function() {
+			fetchMiners();
+		});
+
+	</script>
 	
 	
 </body>
