@@ -8,7 +8,7 @@ from transaction import Transaction
 
 # Get config from config.json
 import json
-with open('Blockchain/config.json', 'r') as f:
+with open('config.json', 'r') as f:
     CONFIG = json.load(f)
 
 

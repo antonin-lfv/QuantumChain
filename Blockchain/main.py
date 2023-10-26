@@ -1,6 +1,8 @@
 from blockchain import Blockchain
 from miner import Miner
 import threading
+import json
+
 
 def create_and_start_miners(num_miners, blockchain):
     miners = []
@@ -24,7 +26,7 @@ def create_and_start_miners(num_miners, blockchain):
 
 if __name__ == "__main__":
     # num_miners = int(input("Enter the number of miners: "))  # Or set this number some other way
-    num_miners = 5
+    num_miners = 4
     blockchain = Blockchain()
 
     miners, threads = create_and_start_miners(num_miners, blockchain)
