@@ -2,7 +2,7 @@ from datetime import datetime
 
 
 class Transaction:
-    def __init__(self, sender, recipient, amount):
+    def __init__(self, sender, recipient, amount, timestamp=None):
         """Constructor for Transaction
 
         Args:
@@ -13,7 +13,10 @@ class Transaction:
         self.sender = sender
         self.recipient = recipient
         self.amount = amount
-        self.timestamp = datetime.now()
+        if timestamp is None:
+            self.timestamp = datetime.now()
+        else:
+            self.timestamp = timestamp
 
     def __str__(self):
         return f"{self.sender} -> {self.recipient}: {self.amount}"
@@ -25,6 +28,10 @@ class Transaction:
             'amount': self.amount,
             'timestamp': self.timestamp.strftime("%Y-%m-%d %H:%M:%S")
         }
+
+    def __eq__(self, other):
+        return (self.sender == other.sender and self.recipient == other.recipient and self.amount == other.amount
+                and self.timestamp == other.timestamp)
 
     @classmethod
     def from_dict(cls, data):

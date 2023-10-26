@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Miner1",
+        "tokens": 5.8,
+        "nb_blocks_mined": 1,
+        "activated": "yes"
+    },
+    {
+        "name": "Miner2",
+        "tokens": 34.8,
+        "nb_blocks_mined": 6,
+        "activated": "yes"
+    },
+    {
+        "name": "Miner3",
+        "tokens": 17.4,
+        "nb_blocks_mined": 3,
+        "activated": "yes"
+    },
+    {
+        "name": "Miner4",
+        "tokens": 23.2,
+        "nb_blocks_mined": 4,
+        "activated": "yes"
+    }
+]

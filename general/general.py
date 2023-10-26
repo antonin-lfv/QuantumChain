@@ -7,7 +7,7 @@ BLP_general = Blueprint('BLP_general', __name__,
 
 @BLP_general.route('/')
 def home():
-    # Get blockchain from the file Blockchain/num_blocks.json
+    """# Get blockchain from the file Blockchain/num_blocks.json
     with open('Blockchain/blockchain_data.json') as json_file:
         data = json.load(json_file)
         number_blocks = len(data)
@@ -16,7 +16,12 @@ def home():
             last_block_mined_date = data[-1]['end_time']
         else:
             first_block_mined_date = None
-            last_block_mined_date = None
+            last_block_mined_date = None"""
+
+    first_block_mined_date = None
+    last_block_mined_date = None
+    data = []
+    number_blocks = 0
 
     # Get miners from the file Blockchain/miners.json
     with open('Blockchain/miners.json') as json_file:

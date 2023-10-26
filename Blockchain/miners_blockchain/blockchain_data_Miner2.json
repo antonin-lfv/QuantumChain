@@ -1,0 +1,127 @@
+[
+    {
+        "index": 0,
+        "transactions": [],
+        "previous_hash": "0000000000",
+        "hash": "0000095d443c20161b5efdd1556de627f986498a86b8034a6e5e9d81da2c1c4f",
+        "nonce": 4403154718,
+        "start_time": "2023-10-26 17:35:58",
+        "end_time": "2023-10-26 17:36:05",
+        "miner": "Miner2"
+    },
+    {
+        "index": 1,
+        "transactions": [
+            {
+                "sender": "Blockchain",
+                "recipient": "Miner2",
+                "amount": 5.8,
+                "timestamp": "2023-10-26 17:36:05"
+            },
+            {
+                "sender": "Miner2",
+                "recipient": "Miner_random",
+                "amount": 6,
+                "timestamp": "2023-10-26 17:36:05"
+            }
+        ],
+        "previous_hash": "0000095d443c20161b5efdd1556de627f986498a86b8034a6e5e9d81da2c1c4f",
+        "hash": "00000d0f85327094eeba4f92fab22b14ed1354b84b00743ad42a93ab4826c13d",
+        "nonce": 2072081186,
+        "start_time": "2023-10-26 17:36:05",
+        "end_time": "2023-10-26 17:36:08",
+        "miner": "Miner2"
+    },
+    {
+        "index": 2,
+        "transactions": [
+            {
+                "sender": "Blockchain",
+                "recipient": "Miner2",
+                "amount": 5.8,
+                "timestamp": "2023-10-26 17:36:08"
+            },
+            {
+                "sender": "Miner2",
+                "recipient": "Miner_random",
+                "amount": 8,
+                "timestamp": "2023-10-26 17:36:08"
+            }
+        ],
+        "previous_hash": "00000d0f85327094eeba4f92fab22b14ed1354b84b00743ad42a93ab4826c13d",
+        "hash": "000002c8036e2d074788b7d04b28871282899dd7fa3f941d4869dd339af6341d",
+        "nonce": 7913529763,
+        "start_time": "2023-10-26 17:36:08",
+        "end_time": "2023-10-26 17:36:24",
+        "miner": "Miner2"
+    },
+    {
+        "index": 3,
+        "transactions": [
+            {
+                "sender": "Blockchain",
+                "recipient": "Miner2",
+                "amount": 5.8,
+                "timestamp": "2023-10-26 17:36:25"
+            },
+            {
+                "sender": "Miner2",
+                "recipient": "Miner_random",
+                "amount": 2,
+                "timestamp": "2023-10-26 17:36:25"
+            }
+        ],
+        "previous_hash": "000002c8036e2d074788b7d04b28871282899dd7fa3f941d4869dd339af6341d",
+        "hash": "0000037e2894288df0b502ed60f8fd283c0bf80f35c731667dba6e213116c91b",
+        "nonce": 7530401445,
+        "start_time": "2023-10-26 17:36:24",
+        "end_time": "2023-10-26 17:36:38",
+        "miner": "Miner2"
+    },
+    {
+        "index": 4,
+        "transactions": [
+            {
+                "sender": "Blockchain",
+                "recipient": "Miner2",
+                "amount": 5.8,
+                "timestamp": "2023-10-26 17:36:38"
+            },
+            {
+                "sender": "Miner2",
+                "recipient": "Miner_random",
+                "amount": 9,
+                "timestamp": "2023-10-26 17:36:38"
+            }
+        ],
+        "previous_hash": "0000037e2894288df0b502ed60f8fd283c0bf80f35c731667dba6e213116c91b",
+        "hash": "00000ebd6470e35e638ca8833afb2516be3233ffc4b5eceec354482e39c81122",
+        "nonce": 7964920482,
+        "start_time": "2023-10-26 17:36:38",
+        "end_time": "2023-10-26 17:36:52",
+        "miner": "Miner2"
+    },
+    {
+        "index": 5,
+        "transactions": [
+            {
+                "sender": "Blockchain",
+                "recipient": "Miner2",
+                "amount": 5.8,
+                "timestamp": "2023-10-26 17:36:52"
+            },
+            {
+                "sender": "Miner2",
+                "recipient": "Miner_random",
+                "amount": 10,
+                "timestamp": "2023-10-26 16:26:52"
+            }
+        ],
+        "previous_hash": "00000ebd6470e35e638ca8833afb2516be3233ffc4b5eceec354482e39c81122",
+        "hash": null,
+        "nonce": null,
+        "start_time": "2023-10-26 17:36:52",
+        "end_time": null,
+        "miner": null
+    }
+]

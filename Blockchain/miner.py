@@ -13,8 +13,8 @@ with open('config.json', 'r') as f:
 
 
 class Miner:
-    def __init__(self, blockchain, miner):
-        self.blockchain = blockchain
+    def __init__(self, miner):
+        self.blockchain = Blockchain(miner)
         self.miner = miner  # Name of the miner
 
     def mine_block(self):

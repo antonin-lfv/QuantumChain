@@ -1,0 +1,35 @@
+[
+    {
+        "index": 0,
+        "transactions": [],
+        "previous_hash": "0000000000",
+        "hash": "00000f42e88b185d8846fbfd3459cb4b2058573bdabc25e95124fcbb3b59d619",
+        "nonce": 1620244029,
+        "start_time": "2023-10-26 17:35:58",
+        "end_time": "2023-10-26 17:35:59",
+        "miner": "Miner1"
+    },
+    {
+        "index": 1,
+        "transactions": [
+            {
+                "sender": "Blockchain",
+                "recipient": "Miner1",
+                "amount": 5.8,
+                "timestamp": "2023-10-26 17:35:59"
+            },
+            {
+                "sender": "Miner1",
+                "recipient": "Miner_random",
+                "amount": 1,
+                "timestamp": "2023-10-26 16:26:52"
+            }
+        ],
+        "previous_hash": "00000f42e88b185d8846fbfd3459cb4b2058573bdabc25e95124fcbb3b59d619",
+        "hash": null,
+        "nonce": null,
+        "start_time": "2023-10-26 17:35:59",
+        "end_time": null,
+        "miner": null
+    }
+]
