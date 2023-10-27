@@ -29,13 +29,6 @@
             <a href="{{ url_for('BLP_general.home') }}" class="brand-logo">
 				<h1 class="brand-title">QuantumChain</h1>
             </a>
-            <div class="nav-control">
-                <div class="hamburger">
-                    <span class="line"></span>
-					<span class="line"></span>
-					<span class="line"></span>
-                </div>
-            </div>
         </div>
         <!--**********************************
             Nav header end
@@ -64,7 +57,7 @@
             <!-- row -->	
 			<div class="page-titles">
 				<ol class="breadcrumb">
-					<li><h5 class="bc-title">Employee</h5></li>
+					<li><h5 class="bc-title">Miners</h5></li>
 					<li class="breadcrumb-item"><a href="{{ url_for('BLP_general.home') }}">
 						<svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path d="M2.125 6.375L8.5 1.41667L14.875 6.375V14.1667C14.875 14.5424 14.7257 14.9027 14.4601 15.1684C14.1944 15.4341 13.8341 15.5833 13.4583 15.5833H3.54167C3.16594 15.5833 2.80561 15.4341 2.53993 15.1684C2.27426 14.9027 2.125 14.5424 2.125 14.1667V6.375Z" stroke="#2C2C2C" stroke-linecap="round" stroke-linejoin="round"/>
@@ -103,15 +96,15 @@
 													<td>
 														<div class="products">
 															<div>
-																<h6>{{miner["name"]}}</h6>
-																<span>Miner</span>	
+																<h3>{{miner["name"]}}</h3>
+                                                                <a class="btn btn-primary btn-xxs" href="{{ url_for('BLP_general.view_blockchain', miner_name=miner['name']) }}">View blockchain</a>
 															</div>	
 														</div>
 													</td>
 													<td><span>{{miner["tokens"]}}</span></td>
 													<td><span>{{miner["nb_blocks_mined"]}}</span></td>
 													<td>
-														<span class="badge badge-success light border-0">Active</span>
+														<span class="badge badge-{% if miner["activated"] %}success{% else %}danger{% endif %} light border-0">{% if miner["activated"] %}Active{% else %}Inactive{% endif %}</span>
 													</td>
 												</tr>
 											{% endfor %}
@@ -139,7 +132,7 @@
         ***********************************-->
         <div class="footer">
             <div class="copyright">
-               <p>Copyright © Developed by <a href="https://antonin-lfv.github.io" target="_blank">Antonin</a> 2023</p>
+               <p>Copyright © Developed by <a href="https://antonin-lfv.github.io" target="_blank">Antonin</a> & Tom 2023</p>
             </div>
         </div>
         <!--**********************************
@@ -161,6 +154,8 @@
 		function updateTable(miners) {
 			let tableBody = $('#empoloyees-tblwrapper tbody');
 			tableBody.empty(); // Videz le tableau existant
+
+            let url_miner_blockchain = "{{ url_for('BLP_general.view_blockchain', miner_name='miner_name') }}";
 		
 			miners.forEach((miner) => {
 			tableBody.append(`
@@ -168,14 +163,15 @@
 				<td>
 					<div class="products">
 					<div>
-						<h6>${miner.name}</h6>
-						<span>Miner</span>
+						<h3>${miner.name}</h3>
+						<a class="btn btn-primary btn-xxs" href="${url_miner_blockchain.replace('miner_name', miner.name)}">View blockchain</a>
 					</div>
 					</div>
 				</td>
 				<td><span>${miner.tokens}</span></td>
 				<td><span>${miner.nb_blocks_mined}</span></td>
-				<td><span class="badge badge-success light border-0">Active</span></td>
+				<td>
+                    <span class="badge badge-${miner.activated ? 'success' : 'danger'} light border-0">${miner.activated ? 'Active' : 'Inactive'}</span>
 				</tr>
 			`);
 			});
