@@ -36,10 +36,21 @@ class Block:
         self.end_time = (
             datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S") if end_time else None
         )  # Time when the block was mined
-        self.miner = miner if miner else None
+        self.miner = miner if miner else None  # Name of the miner who mined the block
 
     def calculate_hash(self):
-        block_string = json.dumps(self.to_dict())
+        """
+        Calculate the hash of the block using the SHA256 algorithm.
+        Fields to hash:
+        index, transactions, previous_hash, nonce, start_time
+        """
+        block = self.to_dict()
+        # remove hash, end_time and miner from the dict
+        del block["hash"]
+        del block["end_time"]
+        del block["miner"]
+        # sort the dict by keys
+        block_string = json.dumps(block, sort_keys=True)
         return hashlib.sha256(block_string.encode()).hexdigest()
 
     @classmethod

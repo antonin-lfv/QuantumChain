@@ -10,9 +10,13 @@ def create_and_start_miners(num_miners):
     for i in range(num_miners):
         print(f"Creating miner {i+1}")
         miner_name = f"Miner{i+1}"
-        miner = Miner(miner_name)
+        miner = Miner(miner_name, num_miners)
         miners.append(miner)
 
+        # Start the MQTT client for each miner
+        miner.start()
+
+        # Start the mining thread for each miner
         thread = threading.Thread(target=miner.mine_block)
         threads.append(thread)
         thread.start()
@@ -46,6 +50,6 @@ def create_and_start_miners(num_miners):
 
 if __name__ == "__main__":
     # num_miners = int(input("Enter the number of miners: "))  # Or set this number some other way
-    num_miners = 5
+    num_miners = 2
 
     miners, threads = create_and_start_miners(num_miners)

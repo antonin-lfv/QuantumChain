@@ -21,7 +21,7 @@ def beautify_transaction(transaction):
     Blockchain -> Miner1: 5.8 (2023-10-27 21:26:43)
     """
     transaction = (
-        f"{transaction['sender']} -> {transaction['recipient']}: {transaction['amount']} ("
+        f"{transaction['sender']} -> {transaction['recipient']}: {transaction['amount']} Tokens ("
         f"{transaction['timestamp']})"
     )
     return transaction
@@ -129,6 +129,9 @@ def miners():
 
 @BLP_general.route("/view_blockchain/<miner_name>")
 def view_blockchain(miner_name):
+    # WARNING: For now, the number of tokens is only the ones earned by mining blocks not the ones
+    # earned by transactions
+
     # Get miner from the file Blockchain/miners.json
     with open("Blockchain/miners.json") as json_file:
         miners = json.load(json_file)

@@ -8,29 +8,8 @@
     },
     {
         "name": "Miner2",
-        "tokens": 23.2,
-        "nb_blocks_mined": 4,
-        "activated": true,
-        "honesty": true
-    },
-    {
-        "name": "Miner3",
-        "tokens": 23.2,
-        "nb_blocks_mined": 4,
-        "activated": true,
-        "honesty": true
-    },
-    {
-        "name": "Miner4",
-        "tokens": 40.6,
-        "nb_blocks_mined": 7,
-        "activated": true,
-        "honesty": true
-    },
-    {
-        "name": "Miner5",
-        "tokens": 17.4,
-        "nb_blocks_mined": 3,
+        "tokens": 46.4,
+        "nb_blocks_mined": 8,
         "activated": true,
         "honesty": true
     }

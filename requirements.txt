@@ -6,3 +6,4 @@ flask-nav
 jsons
 pip
 requests
+paho-mqtt
