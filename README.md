@@ -1,5 +1,5 @@
 # QuantumChain
-A simple blockchain implementation in Python.
+A POS blockchain implementation in Python.
 
 # Installation
 
@@ -27,6 +27,5 @@ flask run
 
 # reset the simulation
 
-set the content of miners.json to []
-
-empty the directory Blockchain/miners_blockchain
+- set the content of miners.json to []
+- empty the directory Blockchain/miners_blockchain

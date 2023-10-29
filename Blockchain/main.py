@@ -3,7 +3,8 @@ import threading
 import json
 
 
-# TODO : verify the verification of a block because for example, miner 3 was stuck at block 25 but mined the block 35
+# TODO : When the blockchain of a miner is 5 blocks behind the longest blockchain,
+#  he should stop mining and start mining on the longest blockchain
 
 
 def create_and_start_miners(num_miners, num_dishonest_miners):
