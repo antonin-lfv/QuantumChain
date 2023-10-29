@@ -7,3 +7,4 @@ jsons
 pip
 requests
 paho-mqtt
+networkx

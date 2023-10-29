@@ -82,24 +82,25 @@
 								<div class="c-details">
 									<ul>
 										<li>
-											<span>Token</span>
+											<span>Token earned by block reward</span>
 											<p>{{ miner['tokens'] }}</p>
 										</li>
 										<li>
 											<span>Mined blocks</span>
 											<p>{{ miner['nb_blocks_mined'] }}</p>
 										</li>
-										<li>
-											<span>Honesty</span>
-											<p>{% if miner['honesty'] %}Honest{% else %}Dishonest{% endif %}</p>
-										</li>
 									</ul>
 								</div>
                                 <br>
-                                <span class="badge badge-{% if miner["activated"] %}success{% else %}danger{% endif %} light border-0">{% if miner["activated"] %}Active{% else %}Inactive{% endif %}</span>
+                                <span class="badge badge-{% if miner["activated"] %}success{% else %}danger{% endif %} light border-0">{% if miner["activated"] %}Active{% else %}Inactive{% endif %}</span> &nbsp;
+                                <span class="badge badge-{% if miner["honesty"] %}success{% else %}danger{% endif %} light border-0">{% if miner["honesty"] %}Honest{% else %}Dishonest{% endif %}</span>
 								<br>
                                 <div>
-									<!-- Toggle to set the miner dishonest in the blockchain -->
+                                    <br>
+                                <!-- Btn to set the miner dishonest in the blockchain -->
+                                <div class="sweetalert">
+                                    <button class="btn btn-{% if miner["honesty"] %}danger{% else %}success{% endif %} btn sweet-success btn-xs" id="TurnMinerHonesty">Turn miner to {% if miner['honesty'] %}Dishonest{% else %}Honest{% endif %} </button>
+                                </div>
 								</div>
 							</div>
 						</div>
@@ -203,6 +204,24 @@
     <!--**********************************
         Scripts
     ***********************************-->
+    <script>
+        // change miner honesty with url "/change_miner_honesty/<miner_name>"
+        function change_miner_honesty(miner_name) {
+            $.get("/change_miner_honesty/"+miner_name, function(data, status){
+                if (status == "success") {
+                    console.log("Miner honesty changed");
+                }
+                else {
+                    console.log("Error while changing miner honesty");
+                }
+            });
+        }
+
+        // Add event listener to the button to change miner honesty
+        document.getElementById("TurnMinerHonesty").addEventListener("click", function(){
+            change_miner_honesty("{{ miner_name }}");
+        });
+    </script>
 	{% include 'javascript_includes.html' %}
 
 </body>

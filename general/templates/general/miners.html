@@ -87,6 +87,8 @@
 												<th>Miner Name</th>
 												<th>Tokens earned</th>
 												<th>Blocks mined</th>
+                                                <th>Total blocks in the blockchain</th>
+                                                <th>Honesty</th>
 												<th>Status</th>
 											</tr>
 										</thead>
@@ -103,6 +105,9 @@
 													</td>
 													<td><span>{{miner["tokens"]}}</span></td>
 													<td><span>{{miner["nb_blocks_mined"]}}</span></td>
+                                                    <td><span>{{miner["nb_blocks_blockchain"]}}</span></td>
+                                                    <td>
+                                                        <span class="badge badge-{% if miner["honesty"] %}success{% else %}danger{% endif %} light border-0">{% if miner["honesty"] %}Honest{% else %}Dishonest{% endif %}</span>
 													<td>
 														<span class="badge badge-{% if miner["activated"] %}success{% else %}danger{% endif %} light border-0">{% if miner["activated"] %}Active{% else %}Inactive{% endif %}</span>
 													</td>
@@ -170,6 +175,9 @@
 				</td>
 				<td><span>${miner.tokens}</span></td>
 				<td><span>${miner.nb_blocks_mined}</span></td>
+                <td><span>${miner.nb_blocks_blockchain}</span></td>
+                <td>
+                    <span class="badge badge-${miner.honesty ? 'success' : 'danger'} light border-0">${miner.honesty ? 'Honest' : 'Dishonest'}</span>
 				<td>
                     <span class="badge badge-${miner.activated ? 'success' : 'danger'} light border-0">${miner.activated ? 'Active' : 'Inactive'}</span>
 				</tr>

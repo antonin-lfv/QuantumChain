@@ -5,6 +5,7 @@ from transaction import Transaction
 import random
 import json
 import os
+import hashlib
 
 with open("config.json", "r") as f:
     CONFIG = json.load(f)
@@ -81,7 +82,6 @@ class Blockchain:
 
             print(f"Block {block.index} accepted for miner {miner_name}")
             # print("Block accepted")
-            self.stop_mining_event.set()  # Notify other miners to stop mining this block
 
             # replace the last block with the new block
             self.chain[-1] = block
@@ -160,11 +160,6 @@ class Blockchain:
                 and transaction["sender"] != "Blockchain"
             ):
                 remaining_transactions.append(transaction)
-        print(f"[INFO]: Transaction in the last block: {last_block_transactions_dict}")
-        print(
-            f"[INFO]: Transaction in the received block: {received_block_transactions_dict}"
-        )
-        print(f"[INFO]: Remaining transactions: {remaining_transactions}")
 
         self.generate_new_block(
             hash_=received_block.hash_,
@@ -176,11 +171,12 @@ class Blockchain:
         return True
 
     def valid_proof_of_work(self, received_block):
-        # Check if the hash of the block starts with CONFIG["STARTWITH_HASH"]
+        # ==== Check if the hash of the block starts with CONFIG["STARTWITH_HASH"]
         if not received_block.hash_.startswith(CONFIG["STARTWITH_HASH"]):
             print(f"[TEST]: Invalid hash condition: {received_block.hash_}")
             return False
-        # Check if the previous_hash is equal to the hash of the last last block
+
+        # ==== Check if the previous_hash is equal to the hash of the last last block
         # ONLY IF IT'S NOT THE GENESIS BLOCK
         last_verified_block = self.get_last_mined_block()
         if last_verified_block is not None:
@@ -189,8 +185,10 @@ class Blockchain:
                     f"[TEST]: Invalid previous hash: {last_verified_block.hash_} != {received_block.previous_hash}"
                 )
                 return False
+
+        # ==== Check if the hash of the block is valid
         # Calculate the hash of the block, keeping only the fields needed for the hash
-        """hash_to_check = received_block.hash_
+        hash_to_check = received_block.hash_
         received_block = received_block.to_dict()
         del received_block["hash"]
         del received_block["end_time"]
@@ -202,10 +200,15 @@ class Blockchain:
             print(
                 f"[TEST]: Invalid hash: {calculated_hash} != {hash_to_check} for block {received_block_string}"
             )
-            return False"""
+            return False
+
         return True
 
     def valid_transactions(self, received_block):
+        """
+        Verify if all the transactions of the block are valid. Thus, if the sender has enough tokens for each
+        transaction.
+        """
         raise NotImplementedError
 
     def generate_new_block(
@@ -242,7 +245,7 @@ class Blockchain:
             # Add the transactions of the last block not mined
             # (there are only transactions not already in the blockchain)
             for transaction in transactions:
-                print(f"[INFO]: Adding transaction {transaction}")
+                # print(f"[INFO]: Adding transaction {transaction}")
                 new_transaction = Transaction.from_dict(transaction)
                 new_block.transactions.append(new_transaction)
 

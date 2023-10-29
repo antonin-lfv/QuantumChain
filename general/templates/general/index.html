@@ -60,8 +60,8 @@
 					<li><h5 class="bc-title">Dashboard</h5></li>
 					<li class="breadcrumb-item"><a href="{{ url_for('BLP_general.home') }}">
 						<svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path d="M2.125 6.375L8.5 1.41667L14.875 6.375V14.1667C14.875 14.5424 14.7257 14.9027 14.4601 15.1684C14.1944 15.4341 13.8341 15.5833 13.4583 15.5833H3.54167C3.16594 15.5833 2.80561 15.4341 2.53993 15.1684C2.27426 14.9027 2.125 14.5424 2.125 14.1667V6.375Z" stroke="#2C2C2C" stroke-linecap="round" stroke-linejoin="round"/>
-							<path d="M6.375 15.5833V8.5H10.625V15.5833" stroke="#2C2C2C" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M2.125 6.375L8.5 1.41667L14.875 6.375V14.1667C14.875 14.5424 14.7257 14.9027 14.4601 15.1684C14.1944 15.4341 13.8341 15.5833 13.4583 15.5833H3.54167C3.16594 15.5833 2.80561 15.4341 2.53993 15.1684C2.27426 14.9027 2.125 14.5424 2.125 14.1667V6.375Z" stroke="#2C2C2C" stroke-linecap="round" stroke-linejoin="round"></path>
+							<path d="M6.375 15.5833V8.5H10.625V15.5833" stroke="#2C2C2C" stroke-linecap="round" stroke-linejoin="round"></path>
 						</svg>
 						Home </a>
 					</li>
@@ -101,7 +101,7 @@
 										</svg>
 									</span>
 									<div class="media-body">
-										<p class="mb-1">Blocks in main version</p>
+										<p class="mb-1">Blocks in main blockchain</p>
 										<h4 class="mb-0">{{number_blocks}}</h4>
 									</div>
 								</div>
@@ -126,7 +126,7 @@
 							</div>
 						</div>
                     </div>
-                    <div class="col-xl-3  col-lg-6 col-sm-6">
+                    <div class="col-xl-3 col-lg-6 col-sm-6">
                             <div class="widget-stat card">
                                 <div class="card-body p-4">
                                     <div class="media ai-icon">
@@ -147,10 +147,10 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
+                    </div>
+                    {% if data_longest_blockchain %}
                     <div class="table-responsive">
-                    <h2>Last 10 blocks of the longest blockchain version</h2>
+                        <h2>Last 10 blocks of the longest blockchain version</h2>
                         <table class="table table-responsive-md">
                             <thead>
                                 <tr>
@@ -164,7 +164,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {%for block_data in data[::-1] %}
+                                {%for block_data in data_longest_blockchain[::-1] %}
                                 <tr>
                                     <td><strong>{{block_data["index"]}}</strong></td>
                                     <td>{{block_data["hash"]}}</td>
@@ -183,8 +183,25 @@
                             </tbody>
                         </table>
                     </div>
-				</div>
-			
+                    {% endif %}
+                    {% if fig_forks_blockchain %}
+                    <div class="col-xl-12  col-lg-6 col-sm-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">All blockchains</h4>
+                            </div>
+                            <div class="card-body">
+                                    <div id='fig_forks_blockchain' class='chart center-block'></div>
+                                    <script type='text/javascript'>
+                                        // hide plotly toolbox
+                                        var graphs = {{ fig_forks_blockchain | safe}};
+                                        Plotly.plot('fig_forks_blockchain', graphs, {}, {displayModeBar: false});
+                                    </script>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
 			</div>
         </div>
         

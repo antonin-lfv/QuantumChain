@@ -404,6 +404,7 @@
 			low: 0
 		}); 
 	}
+
 	var biPolarBarChart = function(){
 		//Bi-polar bar chart
 		var data = {

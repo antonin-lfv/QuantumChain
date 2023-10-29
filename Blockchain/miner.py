@@ -6,9 +6,15 @@ from block import Block
 # Get config from config.json
 import json
 import paho.mqtt.client as mqtt
+import time
 
 with open("config.json", "r") as f:
     CONFIG = json.load(f)
+
+# For opening the file, retry if it fails (concurent access)
+max_retries = 5  # Max number of retries
+retry_delay = 2  # Delay between each retry
+show_logs = False  # Show logs in the console
 
 
 class Miner:
@@ -40,7 +46,26 @@ class Miner:
         # If it's the block of himself, skip to the next iteration
         if block_dict["miner"] == self.miner_name:
             return
-        # print(f"[TEST]: {self.miner_name} received block: {block_dict}")
+
+        # If the miner is DISHONEST, he will not validate the block
+        for _ in range(max_retries):
+            try:
+                with open("miners.json") as json_file:
+                    miners = json.load(json_file)  # list of miners (dict)
+                    for miner in miners:
+                        if not miner["honesty"] and miner["name"] == self.miner_name:
+                            print(
+                                f"[INFO]: {self.miner_name} is DISHONEST, he will not validate the block from {block_dict['miner']}"
+                            )
+                            return
+                break  # Si la lecture réussit, sortez de la boucle
+            except Exception as e:
+                if show_logs:
+                    print(
+                        f"[FILE LOGS]: Erreur lors de la lecture du fichier: {e}. Retente dans {retry_delay} secondes..."
+                    )
+                time.sleep(retry_delay)
+
         # Create the block object
         received_block = Block.from_dict(block_dict)
         # Validate the block
@@ -55,6 +80,13 @@ class Miner:
                 f"adding it to the blockchain"
             )
             self.blockchain.stop_mining_event.set()
+        else:
+            # The block is invalid, continue mining the current block for this miner
+            # print(f"Block {received_block.index} mined by another miner is invalid")
+            print(
+                f"[INFO]: Block {received_block.index} of {received_block.miner} received by {self.miner_name} is invalid, "
+                f"continue mining the current block"
+            )
 
     def start(self):
         self.client.loop_start()

@@ -3,7 +3,10 @@ import threading
 import json
 
 
-def create_and_start_miners(num_miners):
+# TODO : verify the verification of a block because for example, miner 3 was stuck at block 25 but mined the block 35
+
+
+def create_and_start_miners(num_miners, num_dishonest_miners):
     miners = []
     threads = []
 
@@ -50,6 +53,8 @@ def create_and_start_miners(num_miners):
 
 if __name__ == "__main__":
     # num_miners = int(input("Enter the number of miners: "))  # Or set this number some other way
-    num_miners = 2
+    num_miners = 5
+    num_dishonest_miners = 1
+    assert num_dishonest_miners < num_miners
 
-    miners, threads = create_and_start_miners(num_miners)
+    miners, threads = create_and_start_miners(num_miners, num_dishonest_miners)

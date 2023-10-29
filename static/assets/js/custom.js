@@ -17,31 +17,6 @@ var W3Crm = function(){
 		},800);	
 		
 	}
-	var handleImageSelect = function(){
-
-		const $_SELECT_PICKER = $('.image-select');
-		$_SELECT_PICKER.find('option').each((idx, elem) => {
-			const $OPTION = $(elem);
-			const IMAGE_URL = $OPTION.attr('data-thumbnail');
-			if (IMAGE_URL) {
-				$OPTION.attr('data-content', "<img src='%i'/> %s".replace(/%i/, IMAGE_URL).replace(/%s/, $OPTION.text()))
-			}
-		});
-		$_SELECT_PICKER.selectpicker();
-	}
-
-
-    var handleMetisMenu = function() {
-		if(jQuery('#menu').length > 0 ){
-			$("#menu").metisMenu();
-		}
-		jQuery('.metismenu > .mm-active ').each(function(){
-			if(!jQuery(this).children('ul').length > 0)
-			{
-				jQuery(this).addClass('active-no-child');
-			}
-		});
-	}
    
      var handleAllChecked = function() {
 		$("#checkAll").on('change',function() {
@@ -193,35 +168,6 @@ var W3Crm = function(){
 		});
 		jQuery('.chatbox-close').on('click',function(){
 			jQuery('.chatbox').removeClass('active');
-		});
-	}
-	
-	var handlePerfectScrollbar = function() {
-		if(jQuery('.deznav-scroll').length > 0)
-		{
-			//const qs = new PerfectScrollbar('.deznav-scroll');
-			const qs = new PerfectScrollbar('.deznav-scroll');
-			
-			qs.isRtl = false;
-		}
-	}
-
-	var handleBtnNumber = function() {
-		$('.btn-number').on('click', function(e) {
-			e.preventDefault();
-
-			fieldName = $(this).attr('data-field');
-			type = $(this).attr('data-type');
-			var input = $("input[name='" + fieldName + "']");
-			var currentVal = parseInt(input.val());
-			if (!isNaN(currentVal)) {
-				if (type == 'minus')
-					input.val(currentVal - 1);
-				else if (type == 'plus')
-					input.val(currentVal + 1);
-			} else {
-				input.val(0);
-			}
 		});
 	}
 	
@@ -605,19 +551,7 @@ var W3Crm = function(){
 			});
 		}
 	} 
-	
-	var handleImageSelect = function(){
 
-		const $_SELECT_PICKER = $('.image-select');
-		$_SELECT_PICKER.find('option').each((idx, elem) => {
-			const $OPTION = $(elem);
-			const IMAGE_URL = $OPTION.attr('data-thumbnail');
-			if (IMAGE_URL) {
-				$OPTION.attr('data-content', "<img src='%i'/> %s".replace(/%i/, IMAGE_URL).replace(/%s/, $OPTION.text()))
-			}
-		});
-		$_SELECT_PICKER.selectpicker();
-	}
 	var tagify = function(){
 		if(jQuery('input[name=tagify]').length > 0){
 		
@@ -634,7 +568,6 @@ var W3Crm = function(){
 	/* Function ============ */
 	return {
 		init:function(){
-			handleMetisMenu();
 			handleAllChecked();
 			handleNavigation();
 			handleCurrentActive();
@@ -645,7 +578,6 @@ var W3Crm = function(){
 			handleMenuTabs();
 			handleChatbox();
 			//handlePerfectScrollbar();
-			handleBtnNumber();
 			handleDzChatUser();
 			handleDzFullScreen();
 			handleshowPass();
@@ -664,7 +596,6 @@ var W3Crm = function(){
 			//handleImageSelect();
 			handleSelectPicker();
 			handlePageOnScroll();
-			handleImageSelect();
 			tagify();
 			// masonryBox();
 		},
