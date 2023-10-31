@@ -1,13 +1,11 @@
+import numpy as np
+
 from miner import Miner
 import threading
 import json
 
 
-# TODO : When the blockchain of a miner is 5 blocks behind the longest blockchain,
-#  he should stop mining and start mining on the longest blockchain
-
-
-def create_and_start_miners(num_miners, num_dishonest_miners):
+def create_and_start_miners(num_miners):
     miners = []
     threads = []
 
@@ -40,8 +38,6 @@ def create_and_start_miners(num_miners, num_dishonest_miners):
     while len(miners_data) < num_miners:
         new_miner = {
             "name": f"Miner{len(miners_data) + 1}",
-            "tokens": 0.0,
-            "nb_blocks_mined": 0,
             "activated": True,
         }
         miners_data.append(new_miner)
@@ -55,7 +51,5 @@ def create_and_start_miners(num_miners, num_dishonest_miners):
 if __name__ == "__main__":
     # num_miners = int(input("Enter the number of miners: "))  # Or set this number some other way
     num_miners = 5
-    num_dishonest_miners = 1
-    assert num_dishonest_miners < num_miners
 
-    miners, threads = create_and_start_miners(num_miners, num_dishonest_miners)
+    miners, threads = create_and_start_miners(num_miners)

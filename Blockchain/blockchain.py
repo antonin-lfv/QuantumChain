@@ -6,9 +6,14 @@ import random
 import json
 import os
 import hashlib
+import time
 
 with open("config.json", "r") as f:
     CONFIG = json.load(f)
+
+# For opening the file, retry if it fails (concurent access)
+max_retries = 5  # Max number of retries
+retry_delay = 2  # Delay between each retry
 
 
 class Blockchain:
@@ -204,6 +209,44 @@ class Blockchain:
 
         return True
 
+    def apply_consensus(self):
+        """
+        Apply the consensus algorithm to the blockchain.
+
+        If the blockchain of the miner (he is honest in this method) is 3 blocks behind the longest blockchain,
+        he should start mining on the longest blockchain.
+
+        Steps :
+            - Get the longest blockchain
+            - Compare the length of the blockchain of the miner with the longest blockchain
+            - If the blockchain of the miner is 3 blocks behind the longest blockchain, copy the longest blockchain and
+                replace the blockchain of the miner
+            - update the stats of the blockchain (in miners_blockchain/blockchain_data_{self.miner_name}.json)
+            - update the stats of the miner (in miners.json)
+        """
+
+        # Get the longest blockchain
+        longest_blockchain = self.get_longest_blockchain_from_miners()
+        # Transform to Blockchain object
+        longest_blockchain = [Block.from_dict(b) for b in longest_blockchain]
+
+        # Compare the length of the blockchain of the miner with the longest blockchain
+        if len(self.chain) < len(longest_blockchain) - 3:
+            print(f"[INFO]: Applying consensus for miner {self.miner_name}")
+            # If the blockchain of the miner is 5 blocks behind the longest blockchain, copy the longest blockchain and
+            # replace the blockchain of the miner
+            self.chain = longest_blockchain
+            self.save_blockchain()
+            self.number_of_blocks = len(self.chain)
+            self.number_of_transactions = sum([len(b.transactions) for b in self.chain])
+            self.mean_time_to_mine = sum(
+                [
+                    (b.end_time - b.start_time).total_seconds()
+                    for b in self.chain
+                    if b.end_time
+                ]
+            ) / len(self.chain)
+
     def valid_transactions(self, received_block):
         """
         Verify if all the transactions of the block are valid. Thus, if the sender has enough tokens for each
@@ -282,8 +325,6 @@ class Blockchain:
 
             new_miner_data = {
                 "name": self.miner_name,
-                "tokens": 0,
-                "nb_blocks_mined": 0,
                 "activated": "yes",
                 "honesty": True,
             }
@@ -292,24 +333,46 @@ class Blockchain:
 
             self.save_miners(miners_data)
 
-    def update_miner_info(self, miner_name, tokens, blocks_mined):
-        with self.lock:
+    @staticmethod
+    def get_longest_blockchain_from_miners():
+        """
+        Get the longest blockchain from the miners.
+        """
+        for _ in range(max_retries):
             try:
                 with open("miners.json", "r") as f:
                     miners_data = json.load(f)
-            except (FileNotFoundError, json.JSONDecodeError):
-                miners_data = []
-
-            for miner in miners_data:
-                if miner["name"] == miner_name:
-                    miner["tokens"] += tokens
-                    miner["tokens"] = round(miner["tokens"], 3)
-                    miner["nb_blocks_mined"] += blocks_mined
                     break
-            else:
-                return  # Miner not found
+            except Exception as e:
+                print(
+                    f"[FILE LOGS]: Erreur lors de la lecture du fichier: {e}. "
+                    f"Retente dans {retry_delay} secondes..."
+                )
+                time.sleep(retry_delay)
 
-            self.save_miners(miners_data)
+        longest_blockchain = None
+        for miner in miners_data:
+            if miner["activated"]:
+                for _ in range(max_retries):
+                    try:
+                        with open(
+                            f"miners_blockchain/blockchain_data_{miner['name']}.json",
+                            "r",
+                        ) as f:
+                            blockchain = json.load(f)
+                            break
+                    except Exception as e:
+                        print(
+                            f"[FILE LOGS]: Erreur lors de la lecture du fichier: {e}. "
+                            f"Retente dans {retry_delay} secondes..."
+                        )
+                        time.sleep(retry_delay)
+                if longest_blockchain is None:
+                    longest_blockchain = blockchain
+                elif len(blockchain) > len(longest_blockchain):
+                    longest_blockchain = blockchain
+
+        return longest_blockchain
 
 
 if __name__ == "__main__":

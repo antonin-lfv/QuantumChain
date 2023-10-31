@@ -47,6 +47,9 @@ class Miner:
         if block_dict["miner"] == self.miner_name:
             return
 
+        # Get honesty of the miner
+        honesty = None
+
         # If the miner is DISHONEST, he will not validate the block
         for _ in range(max_retries):
             try:
@@ -58,6 +61,8 @@ class Miner:
                                 f"[INFO]: {self.miner_name} is DISHONEST, he will not validate the block from {block_dict['miner']}"
                             )
                             return
+                        if miner["name"] == self.miner_name:
+                            honesty = miner["honesty"]
                 break  # Si la lecture réussit, sortez de la boucle
             except Exception as e:
                 if show_logs:
@@ -87,6 +92,11 @@ class Miner:
                 f"[INFO]: Block {received_block.index} of {received_block.miner} received by {self.miner_name} is invalid, "
                 f"continue mining the current block"
             )
+
+        # Consensus : if the blockchain of the miner (honest) is 5 blocks behind the longest blockchain,
+        # he should start mining on the longest blockchain
+        if honesty:
+            self.blockchain.apply_consensus()
 
     def start(self):
         self.client.loop_start()
@@ -123,11 +133,6 @@ class Miner:
 
                         # Send the block to the other miners
                         self.blockchain.publish_block(last_block, self.client)
-
-                        # Update miner info in the file
-                        self.blockchain.update_miner_info(
-                            self.miner_name, CONFIG["REWARD_TOKEN"], 1
-                        )
 
                     break  # break this inner loop, not the outer one
                 else:
