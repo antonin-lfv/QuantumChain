@@ -5,9 +5,12 @@
 git clone
 git checkout online_app
 
-depuis le dossier Blockchain créer app_config.json en mettant l'ip du broker MQTT
+depuis le dossier Blockchain créer app_config.json en mettant l'ip du broker MQTT, l'ip de l'API et le port de l'API
+```
 {
   "MQTT_BROKER_IP": "ip_broker"
+  "API_IP_FLASK_MINER": "ip_api",
+  "API_PORT_FLASK_MINER": "port_api"
 }
 
 Installer les dépendances

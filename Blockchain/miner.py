@@ -115,13 +115,16 @@ class Miner:
             if miner_name != self.miner_name:
                 # Ensure that the miner is not himself after a reconnection
                 miner_info = json.loads(msg.payload.decode())
-                if not miner_info:
+                if miner_info == {}:
                     # If the miner_info is empty, the miner is offline
-                    # Remove the miner from the list of other miners
-                    if miner_info in self.other_miners:
-                        self.other_miners.remove(miner_info)
-                        print(f"[INFO]: Miner {miner_name} is offline")
-                if miner_info not in self.other_miners:
+                    # Remove the miner from the list of other miners thanks to his name
+                    self.other_miners = [
+                        miner
+                        for miner in self.other_miners
+                        if miner["name"] != miner_name
+                    ]
+                    print(f"[INFO]: Miner {miner_name} is offline")
+                elif miner_info not in self.other_miners:
                     self.other_miners.append(miner_info)
                     print(f"[INFO]: New miner discovered: {miner_name}")
 
