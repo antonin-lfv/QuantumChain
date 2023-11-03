@@ -97,7 +97,12 @@
 								<br>
                                 <div>
                                     <br>
-                                <!-- Btn to set the miner dishonest in the blockchain -->
+                                <!-- Btn to activate or deactivate the miner in the blockchain -->
+                                <div class="sweetalert">
+                                    <button class="btn btn-{% if miner["activated"] %}danger{% else %}success{% endif %} btn sweet-success btn-xs" id="TurnMinerActivation">{% if miner['activated'] %}Deactivate{% else %}Activate{% endif %} miner</button>
+                                </div>
+                                    <br>
+                                <!-- Btn to set the miner dishonest or honest in the blockchain -->
                                 <div class="sweetalert">
                                     <button class="btn btn-{% if miner["honesty"] %}danger{% else %}success{% endif %} btn sweet-success btn-xs" id="TurnMinerHonesty">Turn miner to {% if miner['honesty'] %}Dishonest{% else %}Honest{% endif %} </button>
                                 </div>
@@ -217,9 +222,26 @@
             });
         }
 
+        // change miner activation with url "/change_miner_activation/<miner_name>"
+        function change_miner_activation(miner_name) {
+            $.get("/change_miner_activation/"+miner_name, function(data, status){
+                if (status == "success") {
+                    console.log("Miner activation changed");
+                }
+                else {
+                    console.log("Error while changing miner activation");
+                }
+            });
+        }
+
         // Add event listener to the button to change miner honesty
         document.getElementById("TurnMinerHonesty").addEventListener("click", function(){
             change_miner_honesty("{{ miner_name }}");
+        });
+
+        // Add event listener to the button to change miner activation
+        document.getElementById("TurnMinerActivation").addEventListener("click", function(){
+            change_miner_activation("{{ miner_name }}");
         });
     </script>
 	{% include 'javascript_includes.html' %}

@@ -164,6 +164,7 @@ def home():
         hashes = []
         miner_names = []
         block_indexes = []
+        end_dates = []
         for node in G.nodes():
             x, y = pos[node]
             node_x.append(x)
@@ -178,6 +179,11 @@ def home():
             block_indexes.append(
                 [block["index"] for block in all_blocks if block["hash"] == node][0]
                 if [block["index"] for block in all_blocks if block["hash"] == node]
+                else "First block"
+            )
+            end_dates.append(
+                [block["end_time"] for block in all_blocks if block["hash"] == node][0]
+                if [block["end_time"] for block in all_blocks if block["hash"] == node]
                 else "First block"
             )
 
@@ -222,8 +228,8 @@ def home():
                 line_width=1,
             ),
             text=[
-                f"Hash: {h}<br>Miner: {m}<br>Block index: {i}"
-                for h, m, i in zip(hashes, miner_names, block_indexes)
+                f"Hash: {h}<br>Miner: {m}<br>Block index: {i}<br>Validation date: {v}"
+                for h, m, i, v in zip(hashes, miner_names, block_indexes, end_dates)
             ],
             showlegend=False,
         )
@@ -428,7 +434,21 @@ def get_miners():
                         f"Blockchain/miners_blockchain/blockchain_data_{miner['name']}.json"
                     ) as json_file:
                         blockchain = json.load(json_file)
-                        miner["nb_blocks_blockchain"] = len(blockchain)
+                        miner["nb_blocks_blockchain"] = (
+                            len(blockchain) - 1
+                        )  # -1 for the current block being mined
+                        # Get the number of blocks mined by the miner
+                        miner["nb_blocks_mined"] = len(
+                            [
+                                block
+                                for block in blockchain
+                                if block["miner"] == miner["name"]
+                            ]
+                        )
+                        # Get the number of tokens earned by the miner
+                        miner["nb_tokens_earned"] = (
+                            miner["nb_blocks_mined"] * CONFIG["REWARD_TOKEN"]
+                        )
                     break  # Si la lecture réussit, sortez de la boucle
                 except Exception as e:
                     if show_logs:
@@ -460,6 +480,40 @@ def change_miner_honesty(miner_name):
 
     # Change honesty
     miner["honesty"] = not miner["honesty"]
+
+    # Save in the file
+    for _ in range(max_retries):
+        try:
+            with open("Blockchain/miners.json", "w") as json_file:
+                json.dump(miners, json_file, indent=4)
+            break  # Si la lecture réussit, sortez de la boucle
+        except Exception as e:
+            if show_logs:
+                print(
+                    f"[FILE LOGS]: Erreur lors de la lecture du fichier: {e}. Retente dans {retry_delay} secondes..."
+                )
+            time.sleep(retry_delay)
+    return jsonify({"miner": miner})
+
+
+@BLP_general.route("/change_miner_activation/<miner_name>")
+def change_miner_activation(miner_name):
+    # Get miner from the file Blockchain/miners.json
+    for _ in range(max_retries):
+        try:
+            with open("Blockchain/miners.json") as json_file:
+                miners = json.load(json_file)
+                miner = [miner for miner in miners if miner["name"] == miner_name][0]
+            break  # Si la lecture réussit, sortez de la boucle
+        except Exception as e:
+            if show_logs:
+                print(
+                    f"[FILE LOGS]: Erreur lors de la lecture du fichier: {e}. Retente dans {retry_delay} secondes..."
+                )
+            time.sleep(retry_delay)
+
+    # Change activation
+    miner["activated"] = not miner["activated"]
 
     # Save in the file
     for _ in range(max_retries):

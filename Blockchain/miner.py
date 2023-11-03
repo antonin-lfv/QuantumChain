@@ -24,6 +24,9 @@ class Miner:
         self.num_miners = (
             num_miners  # Number of miners in the network (for generating transactions)
         )
+        self.activated = True  # If the miner is activated or not
+        self.honesty = True  # If the miner is honest or not
+
         # MQTT client to publish and receive blocks
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
@@ -47,29 +50,12 @@ class Miner:
         if block_dict["miner"] == self.miner_name:
             return
 
-        # Get honesty of the miner
-        honesty = None
+        # Update activated and honesty
+        self.update_activated_honesty()
 
-        # If the miner is DISHONEST, he will not validate the block
-        for _ in range(max_retries):
-            try:
-                with open("miners.json") as json_file:
-                    miners = json.load(json_file)  # list of miners (dict)
-                    for miner in miners:
-                        if not miner["honesty"] and miner["name"] == self.miner_name:
-                            print(
-                                f"[INFO]: {self.miner_name} is DISHONEST, he will not validate the block from {block_dict['miner']}"
-                            )
-                            return
-                        if miner["name"] == self.miner_name:
-                            honesty = miner["honesty"]
-                break  # Si la lecture réussit, sortez de la boucle
-            except Exception as e:
-                if show_logs:
-                    print(
-                        f"[FILE LOGS]: Erreur lors de la lecture du fichier: {e}. Retente dans {retry_delay} secondes..."
-                    )
-                time.sleep(retry_delay)
+        if not self.activated:
+            # The miner is not activated, he will not validate the block
+            return
 
         # Create the block object
         received_block = Block.from_dict(block_dict)
@@ -95,7 +81,7 @@ class Miner:
 
         # Consensus : if the blockchain of the miner (honest) is 5 blocks behind the longest blockchain,
         # he should start mining on the longest blockchain
-        if honesty:
+        if self.honesty:
             self.blockchain.apply_consensus()
 
     def start(self):
@@ -116,24 +102,49 @@ class Miner:
 
             nonce = random.randint(0, 10000000000)
             while not self.blockchain.stop_mining_event.is_set():
-                last_block.nonce = nonce
-                calculated_hash = last_block.calculate_hash()
+                if self.activated:
+                    last_block.nonce = nonce
+                    calculated_hash = last_block.calculate_hash()
 
-                if calculated_hash.startswith(CONFIG["STARTWITH_HASH"]):
-                    # print(f"Block : {last_block.to_dict()} with hash {calculated_hash}")
+                    if calculated_hash.startswith(CONFIG["STARTWITH_HASH"]):
+                        # print(f"Block : {last_block.to_dict()} with hash {calculated_hash}")
 
-                    last_block.hash_ = calculated_hash
-                    last_block.end_time = datetime.now()
-                    last_block.miner = self.miner_name
+                        last_block.hash_ = calculated_hash
+                        last_block.end_time = datetime.now()
+                        last_block.miner = self.miner_name
 
-                    if self.blockchain.finish_block(
-                        last_block, self.miner_name, self.num_miners
-                    ):
-                        # The block mined is valid, publish it to the other miners
+                        if self.blockchain.finish_block(
+                            last_block, self.miner_name, self.num_miners
+                        ):
+                            # The block mined is valid, publish it to the other miners
 
-                        # Send the block to the other miners
-                        self.blockchain.publish_block(last_block, self.client)
+                            # Send the block to the other miners
+                            self.blockchain.publish_block(last_block, self.client)
 
-                    break  # break this inner loop, not the outer one
-                else:
-                    nonce += 1
+                            # Check if the miner is still activated
+                            self.update_activated_honesty()
+
+                        break  # break this inner loop, not the outer one
+                    else:
+                        nonce += 1
+
+    def update_activated_honesty(self):
+        """
+        Check if the miner is still activated by reading the file miners.json
+        """
+        for _ in range(max_retries):
+            try:
+                with open("miners.json") as json_file:
+                    miners = json.load(json_file)  # list of miners (dict)
+                    for miner in miners:
+                        if miner["name"] == self.miner_name:
+                            self.activated = miner["activated"]
+                            self.honesty = miner["honesty"]
+                            return self.activated
+                break  # Si la lecture réussit, sortez de la boucle
+            except Exception as e:
+                if show_logs:
+                    print(
+                        f"[FILE LOGS]: Erreur lors de la lecture du fichier: {e}. Retente dans {retry_delay} secondes..."
+                    )
+                time.sleep(retry_delay)

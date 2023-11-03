@@ -101,6 +101,19 @@ class Blockchain:
                 hash_=block.hash_, winner_name=miner_name, num_miners=num_miners
             )
 
+            # Read the activation state of the miner
+            for _ in range(max_retries):
+                try:
+                    with open("miners.json", "r") as f:
+                        miners_data = json.load(f)
+                        break
+                except Exception as e:
+                    print(
+                        f"[FILE LOGS]: Erreur lors de la lecture du fichier: {e}. "
+                        f"Retente dans {retry_delay} secondes..."
+                    )
+                    time.sleep(retry_delay)
+
             return True
 
     @staticmethod
