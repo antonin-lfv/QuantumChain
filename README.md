@@ -33,7 +33,7 @@ flask run
 
 Pour reinitialiser la blockchain (sur un OS unix)
 ```
-chmod i+x clean.sh
+chmod u+x clean.sh
 ./clean.sh
 ```
 
