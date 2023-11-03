@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% include 'header.html' %}
+</head>
+<body>
+
+    <!--*******************
+        Preloader start
+    ********************-->
+   <div id="preloader">
+		<div class="lds-ripple">
+			<div></div>
+			<div></div>
+		</div>
+    </div>
+    <!--*******************
+        Preloader end
+    ********************-->
+
+    <!--**********************************
+        Main wrapper start
+    ***********************************-->
+    <div id="main-wrapper">
+        <!--**********************************
+            Nav header start
+        ***********************************-->
+        <div class="nav-header">
+            <a href="{{ url_for('BLP_general.home') }}" class="brand-logo">
+				<h1 class="brand-title">QuantumChain</h1>
+            </a>
+        </div>
+        <!--**********************************
+            Nav header end
+        ***********************************-->
+
+		<!--**********************************
+            Header start
+        ***********************************-->
+		{% include 'navbar.html' %}
+        <!--**********************************
+            Header end ti-comment-alt
+        ***********************************-->
+
+        <!--**********************************
+            Sidebar start
+        ***********************************-->
+		{% include 'sidebar.html' %}
+        <!--**********************************
+            Sidebar end
+        ***********************************-->
+
+		<!--**********************************
+            Content body start
+        ***********************************-->
+        <div class="content-body">
+            <!-- row -->
+			<div class="page-titles">
+				<ol class="breadcrumb">
+					<li><h5 class="bc-title">Miner blockchain</h5></li>
+					<li class="breadcrumb-item"><a href="{{ url_for('BLP_general.home') }}">
+						<svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M2.125 6.375L8.5 1.41667L14.875 6.375V14.1667C14.875 14.5424 14.7257 14.9027 14.4601 15.1684C14.1944 15.4341 13.8341 15.5833 13.4583 15.5833H3.54167C3.16594 15.5833 2.80561 15.4341 2.53993 15.1684C2.27426 14.9027 2.125 14.5424 2.125 14.1667V6.375Z" stroke="#2C2C2C" stroke-linecap="round" stroke-linejoin="round"></path>
+							<path d="M6.375 15.5833V8.5H10.625V15.5833" stroke="#2C2C2C" stroke-linecap="round" stroke-linejoin="round"></path>
+						</svg>
+						Home</a>
+					</li>
+				</ol>
+			</div>
+
+			<div class="container-fluid">
+				<div class="row">
+                    {% if fig_forks_blockchain %}
+                    <div class="col-xl-12  col-lg-6 col-sm-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Overview of all blockchains</h4>
+                            </div>
+                            <div class="card-body">
+                                    <div id='fig_forks_blockchain' class='chart center-block'></div>
+                                    <script type='text/javascript'>
+                                        // hide plotly toolbox
+                                        var graphs = {{ fig_forks_blockchain | safe}};
+                                        Plotly.plot('fig_forks_blockchain', graphs, {}, {displayModeBar: false});
+                                    </script>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="alert alert-warning solid alert-rounded "><strong>Warning!</strong> No data found.</div>
+                            </div>
+                        </div>
+                    {% endif %}
+				</div>
+
+			</div>
+        </div>
+
+        <!--**********************************
+            Content body end
+        ***********************************-->
+
+
+
+        <!--**********************************
+            Footer start
+        ***********************************-->
+        <div class="footer">
+            <div class="copyright">
+               <p>Copyright © Developed by <a href="https://antonin-lfv.github.io" target="_blank">Antonin</a> & Tom 2023</p>
+            </div>
+        </div>
+        <!--**********************************
+            Footer end
+        ***********************************-->
+
+	</div>
+    <!--**********************************
+        Main wrapper end
+    ***********************************-->
+
+    <!--**********************************
+        Scripts
+    ***********************************-->
+	{% include 'javascript_includes.html' %}
+
+</body>
+</html>
