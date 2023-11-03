@@ -18,7 +18,7 @@ show_logs = False  # Show logs in the console
 
 
 class Miner:
-    def __init__(self, miner):
+    def __init__(self, miner, mqtt_broker_ip):
         self.blockchain = Blockchain(miner)
         self.miner_name = miner  # Name of the miner
         self.activated = True  # If the miner is activated or not
@@ -29,7 +29,9 @@ class Miner:
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
 
-        self.client.connect("localhost", 1883, 60)  # Connecte au broker sur localhost
+        self.client.connect(
+            host=mqtt_broker_ip, port=1883, keepalive=60
+        )  # Connect to the broker
 
     def on_connect(self, client, userdata, flags, rc):
         print(f"Connected with result code {rc}")

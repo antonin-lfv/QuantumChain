@@ -360,9 +360,60 @@
             }
         ],
         "previous_hash": "00000b58a182ca3e143ad3db37d9d8926c45b4fb62e38302799e47734a65a173",
+        "hash": "000004cffa96e837002f5ec537df79e41b5080a19c6c15b391fc4fca84bf9164",
+        "nonce": 8011159915,
+        "start_time": "2023-11-03 15:08:20",
+        "end_time": "2023-11-03 15:41:59",
+        "miner": "Miner_9vhLbfsJhT"
+    },
+    {
+        "index": 22,
+        "transactions": [
+            {
+                "sender": "Blockchain",
+                "recipient": "Miner_9vhLbfsJhT",
+                "amount": 5.8,
+                "timestamp": "2023-11-03 15:41:59"
+            }
+        ],
+        "previous_hash": "000004cffa96e837002f5ec537df79e41b5080a19c6c15b391fc4fca84bf9164",
+        "hash": "00000c073e780d1f7e2a1f482abd598d55c342775cfb6fe488ee1587436ab048",
+        "nonce": 7814986330,
+        "start_time": "2023-11-03 15:41:59",
+        "end_time": "2023-11-03 15:42:28",
+        "miner": "Miner_9vhLbfsJhT"
+    },
+    {
+        "index": 23,
+        "transactions": [
+            {
+                "sender": "Blockchain",
+                "recipient": "Miner_9vhLbfsJhT",
+                "amount": 5.8,
+                "timestamp": "2023-11-03 15:42:28"
+            }
+        ],
+        "previous_hash": "00000c073e780d1f7e2a1f482abd598d55c342775cfb6fe488ee1587436ab048",
+        "hash": "000000c932e81127b79eb7e18871103625173ea3632c33bd8b3086dc635d3e30",
+        "nonce": 9042416697,
+        "start_time": "2023-11-03 15:42:28",
+        "end_time": "2023-11-03 15:44:08",
+        "miner": "Miner_9vhLbfsJhT"
+    },
+    {
+        "index": 24,
+        "transactions": [
+            {
+                "sender": "Blockchain",
+                "recipient": "Miner_9vhLbfsJhT",
+                "amount": 5.8,
+                "timestamp": "2023-11-03 15:44:08"
+            }
+        ],
+        "previous_hash": "000000c932e81127b79eb7e18871103625173ea3632c33bd8b3086dc635d3e30",
         "hash": null,
         "nonce": null,
-        "start_time": "2023-11-03 15:08:20",
+        "start_time": "2023-11-03 15:44:08",
         "end_time": null,
         "miner": null
     }
