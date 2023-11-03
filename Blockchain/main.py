@@ -11,8 +11,8 @@ def create_and_start_miners(num_miners):
     threads = []
 
     # Create the directory Blockchain/miners_blockchain if it doesn't exist
-    if not os.path.isdir("Blockchain/miners_blockchain"):
-        os.mkdir("Blockchain/miners_blockchain")
+    if not os.path.isdir("miners_blockchain"):
+        os.mkdir("miners_blockchain")
 
     for i in range(num_miners):
         print(f"Creating miner {i+1}")
