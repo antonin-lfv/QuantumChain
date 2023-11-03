@@ -2,14 +2,18 @@ from blockchain import Blockchain
 import random
 from datetime import datetime
 from block import Block
-
-# Get config from config.json
 import json
 import paho.mqtt.client as mqtt
 import time
+import threading
 
+# Config for blockchain
 with open("config.json", "r") as f:
     CONFIG = json.load(f)
+
+# Config for online miner
+with open("app_config.json", "r") as f:
+    APP_CONFIG = json.load(f)
 
 # For opening the file, retry if it fails (concurent access)
 max_retries = 5  # Max number of retries
@@ -23,8 +27,13 @@ class Miner:
         self.miner_name = miner  # Name of the miner
         self.activated = True  # If the miner is activated or not
         self.honesty = True  # If the miner is honest or not
+        self.other_miners = []  # List of other miners
 
-        # MQTT client to publish and receive blocks
+        self.discovery_thread = (
+            None  # Thread that will send a discovery message periodically
+        )
+
+        # MQTT client to communicate with the other miners
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
@@ -33,9 +42,25 @@ class Miner:
             host=mqtt_broker_ip, port=1883, keepalive=60
         )  # Connect to the broker
 
+        # Notify the other miners that this miner is online
+        self.client.publish(
+            f"blockchain/discovery/{self.miner_name}",
+            json.dumps(
+                {
+                    "name": self.miner_name,
+                    "ip": APP_CONFIG["API_IP_FLASK_MINER"],
+                    "port": APP_CONFIG["API_PORT_FLASK_MINER"],
+                }
+            ),
+            retain=True,
+        )
+
     def on_connect(self, client, userdata, flags, rc):
         print(f"Connected with result code {rc}")
-        self.client.subscribe("blockchain/blocks")  # Abonne au topic
+        self.client.subscribe("blockchain/blocks")  # Abonne au topic des blocks
+        self.client.subscribe(
+            "blockchain/discovery/+"
+        )  # Abonne au topic de découverte des autres mineurs
 
     def on_message(self, client, userdata, msg):
         """
@@ -44,47 +69,98 @@ class Miner:
 
         After receiving a block, the miner validates it and adds it to its blockchain depending on the honesty.
         """
-        block_dict = json.loads(msg.payload.decode())
-        # If it's the block of himself, skip to the next iteration
-        if block_dict["miner"] == self.miner_name:
-            return
+        if msg.topic.startswith("blockchain/blocks"):
+            # === Receive a block ===
+            block_dict = json.loads(msg.payload.decode())
+            # If it's the block of himself, skip to the next iteration
+            if block_dict["miner"] == self.miner_name:
+                return
 
-        # Update activated and honesty
-        self.update_activated_honesty()
+            # Update activated and honesty
+            self.update_activated_honesty()
 
-        if not self.activated:
-            # The miner is not activated, he will not validate the block
-            return
+            if not self.activated:
+                # The miner is not activated, he will not validate the block
+                return
 
-        # Create the block object
-        received_block = Block.from_dict(block_dict)
-        # Validate the block
-        is_valid = self.blockchain.validate_and_add_block(received_block)
-        if is_valid:
-            # The block is valid, stop mining the current block for this miner
-            # print(f"Block {received_block.index} mined by another miner, stop mining")
-            print(
-                f"[INFO]: Block {received_block.index} of {received_block.miner} received by {self.miner_name} is valid, "
-                f"adding it to the blockchain"
-            )
-            self.blockchain.stop_mining_event.set()
-        else:
-            # The block is invalid, continue mining the current block for this miner
-            # print(f"Block {received_block.index} mined by another miner is invalid")
-            print(
-                f"[INFO]: Block {received_block.index} of {received_block.miner} received by {self.miner_name} is invalid, "
-                f"continue mining the current block"
-            )
+            # Create the block object
+            received_block = Block.from_dict(block_dict)
+            # Validate the block
+            is_valid = self.blockchain.validate_and_add_block(received_block)
+            if is_valid:
+                # The block is valid, stop mining the current block for this miner
+                # print(f"Block {received_block.index} mined by another miner, stop mining")
+                print(
+                    f"[INFO]: Block {received_block.index} of {received_block.miner} received by {self.miner_name} is valid, "
+                    f"adding it to the blockchain"
+                )
+                self.blockchain.stop_mining_event.set()
+            else:
+                # The block is invalid, continue mining the current block for this miner
+                # print(f"Block {received_block.index} mined by another miner is invalid")
+                print(
+                    f"[INFO]: Block {received_block.index} of {received_block.miner} received by {self.miner_name} is invalid, "
+                    f"continue mining the current block"
+                )
 
-        # Consensus : if the blockchain of the miner (honest) is 5 blocks behind the longest blockchain,
-        # he should start mining on the longest blockchain
-        if self.honesty:
-            # TODO : implement consensus
-            # self.blockchain.apply_consensus()
-            ...
+            # Consensus : if the blockchain of the miner (honest) is 5 blocks behind the longest blockchain,
+            # he should start mining on the longest blockchain
+            if self.honesty:
+                self.blockchain.apply_consensus(self.other_miners)
+
+        elif msg.topic.startswith("blockchain/discovery/"):
+            # === Discover a new miner ===
+            # A new miner is discovered, add it to the list of other miners
+            miner_name = msg.topic.split("/")[-1]
+            if miner_name != self.miner_name:
+                # Ensure that the miner is not himself after a reconnection
+                miner_info = json.loads(msg.payload.decode())
+                if not miner_info:
+                    # If the miner_info is empty, the miner is offline
+                    # Remove the miner from the list of other miners
+                    if miner_info in self.other_miners:
+                        self.other_miners.remove(miner_info)
+                        print(f"[INFO]: Miner {miner_name} is offline")
+                if miner_info not in self.other_miners:
+                    self.other_miners.append(miner_info)
+                    print(f"[INFO]: New miner discovered: {miner_name}")
 
     def start(self):
         self.client.loop_start()
+        # Start the thread that will send a discovery message periodically
+        self.publish_discovery_message()  # Appeler une fois au début
+        self.discovery_thread = threading.Thread(
+            target=self.publish_discovery_periodically
+        )
+        self.discovery_thread.daemon = (
+            True  # Ceci assure que le thread se termine avec le programme
+        )
+        self.discovery_thread.start()
+
+    def publish_discovery_periodically(self):
+        while True:
+            self.publish_discovery_message()
+            time.sleep(30)  # Wait 30 seconds before sending another discovery message
+
+    def publish_discovery_message(self):
+        # Verify if the miner is still activated
+        if self.activated:
+            # Miner is still activated, publish a message with his info
+            discovery_info = {
+                "name": self.miner_name,
+                "ip": APP_CONFIG["API_IP_FLASK_MINER"],
+                "port": APP_CONFIG["API_PORT_FLASK_MINER"],
+            }
+        else:
+            # Miner is not activated, publish an empty message
+            discovery_info = {}
+
+        # Publish the discovery message
+        self.client.publish(
+            f"blockchain/discovery/{self.miner_name}",
+            json.dumps(discovery_info),
+            retain=True,  # To ensure that the message is received by the other miners
+        )
 
     def mine_block(self):
         while True:

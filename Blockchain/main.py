@@ -1,7 +1,7 @@
 import os.path
 
 import numpy as np
-
+from api import run_api
 from miner import Miner
 import threading
 import json
@@ -45,6 +45,10 @@ def create_and_start_miner(mqtt_broker_ip):
     # Start the mining thread
     thread = threading.Thread(target=miner.mine_block)
     thread.start()
+
+    # Start the miner API thread
+    api_thread = threading.Thread(target=run_api, args=(miner,), daemon=True)
+    api_thread.start()
 
     # miner.json looks like this:
     # {

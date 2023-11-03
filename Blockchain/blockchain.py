@@ -1,12 +1,10 @@
 from block import Block
 import threading
-from datetime import datetime
 from transaction import Transaction
-import random
 import json
 import os
 import hashlib
-import time
+import requests
 
 with open("config.json", "r") as f:
     CONFIG = json.load(f)
@@ -14,6 +12,7 @@ with open("config.json", "r") as f:
 # For opening the file, retry if it fails (concurent access)
 max_retries = 5  # Max number of retries
 retry_delay = 2  # Delay between each retry
+show_logs = False  # Show logs in the console
 
 
 class Blockchain:
@@ -204,12 +203,20 @@ class Blockchain:
 
         return True
 
-    def apply_consensus(self):
+    def apply_consensus(self, other_miners):
         """
         Apply the consensus algorithm to the blockchain.
 
         If the blockchain of the miner (he is honest in this method) is 3 blocks behind the longest blockchain,
         he should start mining on the longest blockchain.
+
+        Parameters:
+        - other_miners: list of dict of the other miners in the network. Example:
+            {
+                "name": "Miner_aidj87Yhq4",
+                "ip": The IP of the miner,
+                "port": The port of miner,
+            }
 
         Steps :
             - Get the longest blockchain
@@ -221,7 +228,7 @@ class Blockchain:
         """
 
         # Get the longest blockchain
-        longest_blockchain = self.get_longest_blockchain_from_miners()
+        longest_blockchain = self.get_longest_blockchain_from_miners(other_miners)
         # Transform to Blockchain object
         longest_blockchain = [Block.from_dict(b) for b in longest_blockchain]
 
@@ -313,25 +320,41 @@ class Blockchain:
             self.save_miners(new_miner_data)
 
     @staticmethod
-    def get_longest_blockchain_from_miners():
+    def get_longest_blockchain_from_miners(other_miners):
         """
         Get the longest blockchain from the miners.
+
+        Parameters:
+        - other_miners: list of dict of the other miners in the network. Example:
+            {
+                "name": "Miner_aidj87Yhq4",
+                "ip": The IP of the miner,
+                "port": The port of miner,
+            }
         """
-        for _ in range(max_retries):
+
+        longest_blockchain = []
+
+        for miner in other_miners:
+            # Get the blockchain of the miner
             try:
-                with open("miner.json", "r") as f:
-                    miner_data = json.load(f)
-                    break
-            except Exception as e:
-                print(
-                    f"[FILE LOGS]: Erreur lors de la lecture du fichier: {e}. "
-                    f"Retente dans {retry_delay} secondes..."
+                response = requests.get(
+                    f"http://{miner['ip']}:{miner['port']}/chain/length"
                 )
-                time.sleep(retry_delay)
-
-        longest_blockchain = None
-
-        # TODO: implement the API to get the blockchain of the miners
+                if response.status_code == 200:
+                    length = response.json()["length"]
+                    if length > len(longest_blockchain):
+                        # Get the blockchain of the miner
+                        response = requests.get(
+                            f"http://{miner['ip']}:{miner['port']}/chain"
+                        )
+                        if response.status_code == 200:
+                            longest_blockchain = response.json()
+            except requests.exceptions.ConnectionError:
+                if show_logs:
+                    print(
+                        f"[INFO]: {miner['name']} is not available, can't get the blockchain"
+                    )
 
         return longest_blockchain
 
