@@ -115,7 +115,7 @@ class Miner:
             if miner_name != self.miner_name:
                 # Ensure that the miner is not himself after a reconnection
                 miner_info = json.loads(msg.payload.decode())
-                if miner_info == {}:
+                if not miner_info:
                     # If the miner_info is empty, the miner is offline
                     # Remove the miner from the list of other miners thanks to his name
                     self.other_miners = [
@@ -156,7 +156,7 @@ class Miner:
             }
         else:
             # Miner is not activated, publish an empty message
-            discovery_info = {}
+            discovery_info = None
 
         # Publish the discovery message
         self.client.publish(
@@ -219,6 +219,9 @@ class Miner:
                     if miner["name"] == self.miner_name:
                         self.activated = miner["activated"]
                         self.honesty = miner["honesty"]
+                        if not self.activated:
+                            # Publish an empty discovery message
+                            self.publish_discovery_message()
                 break  # Si la lecture réussit, sortez de la boucle
             except Exception as e:
                 if show_logs:
