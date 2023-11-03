@@ -36,7 +36,10 @@ class Blockchain:
         ) / len(self.chain)
 
     def load_from_file(self):
-        if not os.path.exists(f"blockchain_data.json"):
+        if (
+            not os.path.exists(f"blockchain_data.json")
+            or os.path.getsize("blockchain_data.json") == 0
+        ):
             # If the file doesn't exist, create a new blockchain
             return self.genesis_block()
         else:
@@ -214,7 +217,7 @@ class Blockchain:
             - If the blockchain of the miner is 3 blocks behind the longest blockchain, copy the longest blockchain and
                 replace the blockchain of the miner
             - update the stats of the blockchain (in miners_blockchain/blockchain_data_{self.miner_name}.json)
-            - update the stats of the miner (in miners.json)
+            - update the stats of the miner (in miner.json)
         """
 
         # Get the longest blockchain

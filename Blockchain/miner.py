@@ -125,7 +125,7 @@ class Miner:
 
     def update_activated_honesty(self) -> None:
         """
-        Check if the miner is still activated by reading the file miners.json
+        Check if the miner is still activated by reading the file miner.json
         """
         for _ in range(max_retries):
             try:

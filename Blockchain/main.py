@@ -1,3 +1,5 @@
+import os.path
+
 import numpy as np
 
 from miner import Miner
@@ -12,10 +14,25 @@ def generate_random_string(length):
 
 
 def create_and_start_miner():
-    print(f"Creating miner")
-    # The name of the miner is "Miner" + a random string of 10 characters
-    miner_name = f"Miner_{generate_random_string(10)}"
-    miner = Miner(miner_name)
+    # Get miner data
+    with open("miner.json", "r") as f:
+        # if empty, miner_data = {}
+        if os.path.getsize("miner.json") == 0:
+            miner_data = {}
+        else:
+            miner_data = json.load(f)
+
+    if not miner_data:
+        print(f"Creating miner")
+        # The name of the miner is "Miner" + a random string of 10 characters
+        miner_name = f"Miner_{generate_random_string(10)}"
+        miner = Miner(miner_name)
+        miner_data["name"] = miner_name
+        miner_data["activated"] = True
+        miner_data["honesty"] = True
+    else:
+        print(f"Loading miner")
+        miner = Miner(miner_data["name"])
 
     # Start the MQTT client
     miner.start()
@@ -31,28 +48,24 @@ def create_and_start_miner():
     #     "honesty": true
     # }
 
-    # Get miner data
-    with open("miner.json", "r") as f:
-        miner_data = json.load(f)
-
     # Activate miner
-    if not miner_data["activated"]:
+    if "activated" in miner_data and not miner_data["activated"]:
         miner_data["activated"] = True
         miner.activated = True
 
     # Set miner honesty
-    if not miner_data["honesty"]:
+    if "honesty" in miner_data and not miner_data["honesty"]:
         miner_data["honesty"] = True
         miner.honesty = True
 
     # Save the miner data
-    with open("miners.json", "w") as f:
+    with open("miner.json", "w") as f:
         json.dump(miner_data, f, indent=4)
 
-    return miners, threads
+    return
 
 
 if __name__ == "__main__":
     # num_miners = int(input("Enter the number of miners: "))  # Or set this number some other way
 
-    miners, threads = create_and_start_miner()
+    create_and_start_miner()
