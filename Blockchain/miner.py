@@ -118,12 +118,14 @@ class Miner:
                 if not miner_info:
                     # If the miner_info is empty, the miner is offline
                     # Remove the miner from the list of other miners thanks to his name
+                    number_of_miners_before = len(self.other_miners)
                     self.other_miners = [
                         miner
                         for miner in self.other_miners
                         if miner["name"] != miner_name
                     ]
-                    print(f"[INFO]: Miner {miner_name} is offline")
+                    if len(self.other_miners) < number_of_miners_before:
+                        print(f"[INFO]: Miner {miner_name} is offline")
                 elif miner_info not in self.other_miners:
                     self.other_miners.append(miner_info)
                     print(f"[INFO]: New miner discovered: {miner_name}")
