@@ -13,7 +13,7 @@ BLP_general = Blueprint("BLP_general", __name__, template_folder="templates/gene
 # For opening the file, retry if it fails (concurent access)
 max_retries = 2  # Max number of retries
 retry_delay = 1  # Delay between each retry
-show_logs = True  # Show logs in the console
+show_logs = False  # Show logs in the console
 
 # Blockchain config
 with open("Blockchain/config.json", "r") as f:
@@ -126,9 +126,9 @@ def home():
                             ]
                         )
                         # Get the number of tokens earned by the miner
-                        miner["nb_tokens_earned"] = (
-                            miner["nb_blocks_mined"] - 1
-                        ) * CONFIG["REWARD_TOKEN"]
+                        miner["nb_tokens_earned"] = max(
+                            (miner["nb_blocks_mined"] - 1) * CONFIG["REWARD_TOKEN"], 0
+                        )
                 break  # Si la lecture réussit, sortez de la boucle
             except Exception as e:
                 if show_logs:
