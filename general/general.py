@@ -387,6 +387,18 @@ def view_blockchain(miner_name):
                         break
                 # get 10 last blocks (the last one is the one being mined)
                 last_10_blocks = blockchain[-11:-1][::-1]
+                # Get the number of blocks in the blockchain of the miner
+                miner["nb_blocks_blockchain"] = (
+                    len(blockchain) - 1
+                )  # -1 for the current block being mined
+                # Get the number of blocks mined by the miner
+                miner["nb_blocks_mined"] = len(
+                    [block for block in blockchain if block["miner"] == miner["name"]]
+                )
+                # Get the number of tokens earned by the miner
+                miner["nb_tokens_earned"] = (
+                    miner["nb_blocks_mined"] * CONFIG["REWARD_TOKEN"]
+                )
             break  # Si la lecture réussit, sortez de la boucle
         except Exception as e:
             if show_logs:
