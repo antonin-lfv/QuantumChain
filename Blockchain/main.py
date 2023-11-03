@@ -3,11 +3,16 @@ import numpy as np
 from miner import Miner
 import threading
 import json
+import os
 
 
 def create_and_start_miners(num_miners):
     miners = []
     threads = []
+
+    # Create the directory Blockchain/miners_blockchain if it doesn't exist
+    if not os.path.isdir("miners_blockchain"):
+        os.mkdir("miners_blockchain")
 
     for i in range(num_miners):
         print(f"Creating miner {i+1}")
