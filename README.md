@@ -40,6 +40,11 @@ chmod u+x clean.sh
 ./clean.sh
 ```
 
+Pour redémarrer mosquitto broker (pour vider les topics, important si un mineur a été stoppé via CTRL+C)
+```
+brew services restart mosquitto
+```
+
 Sinon 
 - supprimer le fichier blockchain_data.json
 - remplacer le contenu de miner.json par {}

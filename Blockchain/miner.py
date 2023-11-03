@@ -219,9 +219,8 @@ class Miner:
                     if miner["name"] == self.miner_name:
                         self.activated = miner["activated"]
                         self.honesty = miner["honesty"]
-                        if not self.activated:
-                            # Publish an empty discovery message
-                            self.publish_discovery_message()
+                        # Publish an empty discovery message
+                        self.publish_discovery_message()
                 break  # Si la lecture réussit, sortez de la boucle
             except Exception as e:
                 if show_logs:

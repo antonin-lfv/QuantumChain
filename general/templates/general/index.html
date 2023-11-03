@@ -102,12 +102,12 @@
                                     <br>
                                 <!-- Btn to activate or deactivate the miner in the blockchain -->
                                 <div class="sweetalert">
-                                    <button class="btn btn-{% if miner["activated"] %}danger{% else %}success{% endif %} btn sweet-success btn-xs" id="TurnMinerActivation">{% if miner['activated'] %}Deactivate{% else %}Activate{% endif %} miner</button>
+                                    <button class="btn btn-{% if miner["activated"] %}danger{% else %}success{% endif %} btn sweet-success-active btn-xs" id="TurnMinerActivation">{% if miner['activated'] %}Deactivate{% else %}Activate{% endif %} miner</button>
                                 </div>
                                     <br>
                                 <!-- Btn to set the miner dishonest or honest in the blockchain -->
                                 <div class="sweetalert">
-                                    <button class="btn btn-{% if miner["honesty"] %}danger{% else %}success{% endif %} btn sweet-success btn-xs" id="TurnMinerHonesty">Turn miner to {% if miner['honesty'] %}Dishonest{% else %}Honest{% endif %} </button>
+                                    <button class="btn btn-{% if miner["honesty"] %}danger{% else %}success{% endif %} btn sweet-success-honest btn-xs" id="TurnMinerHonesty">Turn miner to {% if miner['honesty'] %}Dishonest{% else %}Honest{% endif %} </button>
                                 </div>
 								</div>
 							</div>
@@ -222,7 +222,7 @@
     <script>
         // change miner honesty with url "/change_miner_honesty/<miner_name>"
         function change_miner_honesty() {
-            $.get("/change_miner_honesty/", function(data, status){
+            $.get("/change_miner_honesty", function(data, status){
                 if (status == "success") {
                     console.log("Miner honesty changed");
                 }
@@ -233,7 +233,7 @@
         }
 
         // change miner activation with url "/change_miner_activation/<miner_name>"
-        function change_miner_activation(miner_name) {
+        function change_miner_activation() {
             $.get("/change_miner_activation", function(data, status){
                 if (status == "success") {
                     console.log("Miner activation changed");
