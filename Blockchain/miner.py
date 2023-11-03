@@ -122,10 +122,14 @@ class Miner:
                         break  # break this inner loop, not the outer one
                     else:
                         nonce += 1
+                else:
+                    # Wait until the miner is activated
+                    self.update_activated_honesty()
 
     def update_activated_honesty(self) -> None:
         """
         Check if the miner is still activated by reading the file miner.json
+        or if the miner is still honest by reading the file miner.json
         """
         for _ in range(max_retries):
             try:
