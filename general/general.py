@@ -18,6 +18,10 @@ with open("Blockchain/config.json", "r") as f:
     CONFIG = json.load(f)
 
 
+# TODO : Ajouter un bouton pour stopper le minage des miners un à un pour arreter le réseau sans casser les
+# fichiers json (comme ça le status des miners est sauvegardé et est toujours visible sur le dashboard et à jour)
+
+
 def beautify_transaction(transaction):
     """
     Beautify a transaction
@@ -30,7 +34,7 @@ def beautify_transaction(transaction):
         "timestamp": "2023-10-27 21:26:43"
     }
     To:
-    Blockchain -> Miner1: 5.8 (2023-10-27 21:26:43)
+    Blockchain -> Miner1: 5.8 Tokens (2023-10-27 21:26:43)
     """
     transaction = (
         f"{transaction['sender']} -> {transaction['recipient']}: {transaction['amount']} Tokens ("
