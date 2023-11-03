@@ -45,6 +45,8 @@ python main.py
 
 ## Lancer l'interface
 
+Si la blockchain n'a jamais été lancée, il faut d'abord lancer la blockchain comme indiqué ci-dessus.
+
 ```bash
 flask run
 ```
