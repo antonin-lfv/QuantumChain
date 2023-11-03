@@ -5,51 +5,54 @@ import threading
 import json
 
 
-def create_and_start_miners(num_miners):
-    miners = []
-    threads = []
+def generate_random_string(length):
+    """Generate a random string of fixed length"""
+    valid_char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    return "".join(np.random.choice(list(valid_char), length))
 
-    for i in range(num_miners):
-        print(f"Creating miner {i+1}")
-        miner_name = f"Miner{i+1}"
-        miner = Miner(miner_name, num_miners)
-        miners.append(miner)
 
-        # Start the MQTT client for each miner
-        miner.start()
+def create_and_start_miner():
+    print(f"Creating miner")
+    # The name of the miner is "Miner" + a random string of 10 characters
+    miner_name = f"Miner_{generate_random_string(10)}"
+    miner = Miner(miner_name)
 
-        # Start the mining thread for each miner
-        thread = threading.Thread(target=miner.mine_block)
-        threads.append(thread)
-        thread.start()
+    # Start the MQTT client
+    miner.start()
 
-    # Set activated to "yes" in miners.json for the num_miners first miners
-    with open("miners.json", "r") as f:
-        miners_data = json.load(f)
+    # Start the mining thread
+    thread = threading.Thread(target=miner.mine_block)
+    thread.start()
 
-    # Activate or deactivate miners
-    for i in range(len(miners_data)):
-        if i < num_miners:
-            miners_data[i]["activated"] = True
-        else:
-            miners_data[i]["activated"] = False
+    # miner.json looks like this:
+    # {
+    #     "name": "Miner_aidj87Yhq4",
+    #     "activated": true,
+    #     "honesty": true
+    # }
 
-    # Add new miners if needed
-    while len(miners_data) < num_miners:
-        new_miner = {
-            "name": f"Miner{len(miners_data) + 1}",
-            "activated": True,
-        }
-        miners_data.append(new_miner)
+    # Get miner data
+    with open("miner.json", "r") as f:
+        miner_data = json.load(f)
 
+    # Activate miner
+    if not miner_data["activated"]:
+        miner_data["activated"] = True
+        miner.activated = True
+
+    # Set miner honesty
+    if not miner_data["honesty"]:
+        miner_data["honesty"] = True
+        miner.honesty = True
+
+    # Save the miner data
     with open("miners.json", "w") as f:
-        json.dump(miners_data, f, indent=4)
+        json.dump(miner_data, f, indent=4)
 
     return miners, threads
 
 
 if __name__ == "__main__":
     # num_miners = int(input("Enter the number of miners: "))  # Or set this number some other way
-    num_miners = 5
 
-    miners, threads = create_and_start_miners(num_miners)
+    miners, threads = create_and_start_miner()

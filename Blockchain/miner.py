@@ -18,12 +18,9 @@ show_logs = False  # Show logs in the console
 
 
 class Miner:
-    def __init__(self, miner, num_miners):
+    def __init__(self, miner):
         self.blockchain = Blockchain(miner)
         self.miner_name = miner  # Name of the miner
-        self.num_miners = (
-            num_miners  # Number of miners in the network (for generating transactions)
-        )
         self.activated = True  # If the miner is activated or not
         self.honesty = True  # If the miner is honest or not
 
@@ -60,9 +57,7 @@ class Miner:
         # Create the block object
         received_block = Block.from_dict(block_dict)
         # Validate the block
-        is_valid = self.blockchain.validate_and_add_block(
-            received_block, self.num_miners
-        )
+        is_valid = self.blockchain.validate_and_add_block(received_block)
         if is_valid:
             # The block is valid, stop mining the current block for this miner
             # print(f"Block {received_block.index} mined by another miner, stop mining")
@@ -82,7 +77,9 @@ class Miner:
         # Consensus : if the blockchain of the miner (honest) is 5 blocks behind the longest blockchain,
         # he should start mining on the longest blockchain
         if self.honesty:
-            self.blockchain.apply_consensus()
+            # TODO : implement consensus
+            # self.blockchain.apply_consensus()
+            ...
 
     def start(self):
         self.client.loop_start()
@@ -113,9 +110,7 @@ class Miner:
                         last_block.end_time = datetime.now()
                         last_block.miner = self.miner_name
 
-                        if self.blockchain.finish_block(
-                            last_block, self.miner_name, self.num_miners
-                        ):
+                        if self.blockchain.finish_block(last_block, self.miner_name):
                             # The block mined is valid, publish it to the other miners
 
                             # Send the block to the other miners
@@ -128,19 +123,17 @@ class Miner:
                     else:
                         nonce += 1
 
-    def update_activated_honesty(self):
+    def update_activated_honesty(self) -> None:
         """
         Check if the miner is still activated by reading the file miners.json
         """
         for _ in range(max_retries):
             try:
-                with open("miners.json") as json_file:
-                    miners = json.load(json_file)  # list of miners (dict)
-                    for miner in miners:
-                        if miner["name"] == self.miner_name:
-                            self.activated = miner["activated"]
-                            self.honesty = miner["honesty"]
-                            return self.activated
+                with open("miner.json") as json_file:
+                    miner = json.load(json_file)  # list of miners (dict)
+                    if miner["name"] == self.miner_name:
+                        self.activated = miner["activated"]
+                        self.honesty = miner["honesty"]
                 break  # Si la lecture réussit, sortez de la boucle
             except Exception as e:
                 if show_logs:

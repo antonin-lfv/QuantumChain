@@ -14,7 +14,7 @@
         "transactions": [
             {
                 "sender": "Blockchain",
-                "recipient": "Miner2",
+                "recipient": "Miner_aidj87Yhq4",
                 "amount": 5.8,
                 "timestamp": "2023-11-03 12:02:55"
             },
@@ -71,7 +71,7 @@
                 "timestamp": "2023-11-03 12:03:12"
             },
             {
-                "sender": "Miner3",
+                "sender": "Miner_aidj87Yhq4",
                 "recipient": "Miner1",
                 "amount": 5,
                 "timestamp": "2023-10-26 16:26:52"
@@ -142,7 +142,7 @@
             },
             {
                 "sender": "Miner3",
-                "recipient": "Miner2",
+                "recipient": "Miner_aidj87Yhq4",
                 "amount": 8,
                 "timestamp": "2023-10-26 16:26:52"
             }
@@ -233,7 +233,7 @@
                 "timestamp": "2023-11-03 12:05:14"
             },
             {
-                "sender": "Miner2",
+                "sender": "Miner_aidj87Yhq4",
                 "recipient": "Miner2",
                 "amount": 1,
                 "timestamp": "2023-10-26 16:26:52"
@@ -252,7 +252,7 @@
             },
             {
                 "sender": "Miner2",
-                "recipient": "Miner4",
+                "recipient": "Miner_aidj87Yhq4",
                 "amount": 9,
                 "timestamp": "2023-10-26 16:26:52"
             },
@@ -315,7 +315,7 @@
         "nonce": 8115600178,
         "start_time": "2023-11-03 12:07:12",
         "end_time": "2023-11-03 12:07:21",
-        "miner": "Miner1"
+        "miner": "Miner_aidj87Yhq4"
     },
     {
         "index": 11,
@@ -409,7 +409,7 @@
         "nonce": 3581198340,
         "start_time": "2023-11-03 12:07:24",
         "end_time": "2023-11-03 12:07:32",
-        "miner": "Miner4"
+        "miner": "Miner_aidj87Yhq4"
     },
     {
         "index": 13,
@@ -421,15 +421,21 @@
                 "timestamp": "2023-11-03 12:07:32"
             },
             {
-                "sender": "Miner5",
-                "recipient": "Miner4",
-                "amount": 10,
+                "sender": "Miner1",
+                "recipient": "Miner1",
+                "amount": 2,
                 "timestamp": "2023-10-26 16:26:52"
             },
             {
-                "sender": "Miner2",
-                "recipient": "Miner1",
-                "amount": 4,
+                "sender": "Miner1",
+                "recipient": "Miner4",
+                "amount": 9,
+                "timestamp": "2023-10-26 16:26:52"
+            },
+            {
+                "sender": "Miner1",
+                "recipient": "Miner2",
+                "amount": 2,
                 "timestamp": "2023-10-26 16:26:52"
             }
         ],

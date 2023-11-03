@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	{% include 'header.html' %}	
+{% include 'header.html' %}
 </head>
-<body data-typography="poppins" data-theme-version="light" data-layout="vertical" data-nav-headerbg="black" data-headerbg="color_1">
+<body>
 
     <!--*******************
         Preloader start
     ********************-->
-    <div id="preloader">
+   <div id="preloader">
 		<div class="lds-ripple">
 			<div></div>
 			<div></div>
@@ -33,7 +33,7 @@
         <!--**********************************
             Nav header end
         ***********************************-->
-		
+
 		<!--**********************************
             Header start
         ***********************************-->
@@ -45,167 +45,148 @@
         <!--**********************************
             Sidebar start
         ***********************************-->
-		{% include 'sidebar.html' %}		
+		{% include 'sidebar.html' %}
         <!--**********************************
             Sidebar end
         ***********************************-->
-		
+
 		<!--**********************************
             Content body start
         ***********************************-->
         <div class="content-body">
-            <!-- row -->	
+            <!-- row -->
 			<div class="page-titles">
 				<ol class="breadcrumb">
-					<li><h5 class="bc-title">Dashboard</h5></li>
+					<li><h5 class="bc-title">Miner blockchain</h5></li>
 					<li class="breadcrumb-item"><a href="{{ url_for('BLP_general.home') }}">
 						<svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path d="M2.125 6.375L8.5 1.41667L14.875 6.375V14.1667C14.875 14.5424 14.7257 14.9027 14.4601 15.1684C14.1944 15.4341 13.8341 15.5833 13.4583 15.5833H3.54167C3.16594 15.5833 2.80561 15.4341 2.53993 15.1684C2.27426 14.9027 2.125 14.5424 2.125 14.1667V6.375Z" stroke="#2C2C2C" stroke-linecap="round" stroke-linejoin="round"></path>
 							<path d="M6.375 15.5833V8.5H10.625V15.5833" stroke="#2C2C2C" stroke-linecap="round" stroke-linejoin="round"></path>
 						</svg>
-						Home </a>
+						Home</a>
 					</li>
-					<li class="breadcrumb-item active"><a href="javascript:void(0)">Dashboard</a></li>
 				</ol>
 			</div>
+
 			<div class="container-fluid">
 				<div class="row">
-                    <div class="col-xl-3  col-lg-6 col-sm-6">
-						<div class="widget-stat card">
-							<div class="card-body p-4">
-								<div class="media ai-icon">
-									<span class="me-3 bgl-primary text-primary">
-										<!-- <i class="ti-user"></i> -->
-										<svg id="icon-customers" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user">
-											<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-											<circle cx="12" cy="7" r="4"></circle>
-										</svg>
-									</span>
-									<div class="media-body">
-										<p class="mb-1">Active miners</p>
-										<h4 class="mb-0">{{number_miners}}</h4>
-									</div>
+					<div class="col-xl-3">
+						<div class="card h-auto">
+							<div class="card-body">
+								<div class="c-profile text-center">
+									<img src="{{ url_for('static', filename='assets/images/tab/user.png') }}" class="rounded-circle mb-2" alt="" height="96">
+									<h4>{{ miner_name }}</h4>
+								</div>
+								<div class="c-details">
+									<ul>
+										<li>
+											<span>Token earned by block reward</span>
+											<p>{{ miner['nb_blocks_mined'] }}</p>
+										</li>
+										<li>
+											<span>Mined blocks</span>
+											<p>{{ miner['nb_blocks_mined'] }}</p>
+										</li>
+									</ul>
+								</div>
+                                <br>
+                                <span class="badge badge-{% if miner["activated"] %}success{% else %}danger{% endif %} light border-0">{% if miner["activated"] %}Active{% else %}Inactive{% endif %}</span> &nbsp;
+                                <span class="badge badge-{% if miner["honesty"] %}success{% else %}danger{% endif %} light border-0">{% if miner["honesty"] %}Honest{% else %}Dishonest{% endif %}</span>
+								<br>
+                                <div>
+                                    <br>
+                                <!-- Btn to activate or deactivate the miner in the blockchain -->
+                                <div class="sweetalert">
+                                    <button class="btn btn-{% if miner["activated"] %}danger{% else %}success{% endif %} btn sweet-success btn-xs" id="TurnMinerActivation">{% if miner['activated'] %}Deactivate{% else %}Activate{% endif %} miner</button>
+                                </div>
+                                    <br>
+                                <!-- Btn to set the miner dishonest or honest in the blockchain -->
+                                <div class="sweetalert">
+                                    <button class="btn btn-{% if miner["honesty"] %}danger{% else %}success{% endif %} btn sweet-success btn-xs" id="TurnMinerHonesty">Turn miner to {% if miner['honesty'] %}Dishonest{% else %}Honest{% endif %} </button>
+                                </div>
 								</div>
 							</div>
 						</div>
-                    </div>
-					<div class="col-xl-3  col-lg-6 col-sm-6">
-                        <div class="widget-stat card">
-							<div class="card-body p-4">
-								<div class="media ai-icon">
-									<span class="me-3 bgl-success text-success">
-										<svg id="icon-database-widget" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-database">
-											<ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-											<path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-											<path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
-										</svg>
-									</span>
-									<div class="media-body">
-										<p class="mb-1">Blocks in main blockchain</p>
-										<h4 class="mb-0">{{number_blocks}}</h4>
-									</div>
+					</div>
+					<div class="col-xl-9">
+						<div class="card h-auto">
+							<div class="card-header py-3">
+								<h4 class="heading mb-0">Last 20 transactions of {{ miner_name }}</h4>
+							</div>
+							<div class="card-body p-0">
+								<div class="table-responsive active-projects style-1">
+									<table id="empoloyees-tbl" class="table">
+										<thead>
+                                            <tr>
+                                                <th>SENDER</th>
+                                                <th>RECIPIENT</th>
+                                                <th>STATUS</th>
+                                                <th>DATE</th>
+                                                <th>AMOUNT</th>
+                                            </tr>
+                                        </thead>
+										<tbody>
+                                        {% for transaction in miners_last_20_transactions %}
+											<tr>
+												<td>
+                                                    <span>{{ transaction['sender'] }}</span>
+                                                </td>
+												<td>
+													<span>{{ transaction['recipient'] }}</span>
+												</td>
+												<td><span class="badge badge-success light border-0">Completed</span></td>
+												<td>
+													<span>{{ transaction['timestamp'] }}</span>
+												</td>
+												<td>
+                                                    <span><b>{{ transaction['amount'] }}</b> tokens</span>
+												</td>
+											</tr>
+                                        {% endfor %}
+										</tbody>
+
+									</table>
 								</div>
 							</div>
 						</div>
-                    </div>
-                    <div class="col-xl-3  col-lg-6 col-sm-6">
-                        <div class="widget-stat card">
-							<div class="card-body  p-4">
-								<div class="media ai-icon">
-									<span class="me-3 bgl-danger text-danger">
-										<svg id="icon-revenue" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-dollar-sign">
-											<line x1="12" y1="1" x2="12" y2="23"></line>
-											<path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-										</svg>
-									</span>
-									<div class="media-body">
-										<p class="mb-1">Reward per block</p>
-										<h4 class="mb-0">{{reward_per_block}}</h4>
-									</div>
-								</div>
-							</div>
-						</div>
-                    </div>
-                    <div class="col-xl-3 col-lg-6 col-sm-6">
-                            <div class="widget-stat card">
-                                <div class="card-body p-4">
-                                    <div class="media ai-icon">
-                                        <span class="me-3 bgl-info text-info">
-                                            <polyline points="10 9 9 9 8 9"></polyline>
-                                            <svg id="icon-orders" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
-											<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-											<polyline points="14 2 14 8 20 8"></polyline>
-											<line x1="16" y1="13" x2="8" y2="13"></line>
-											<line x1="16" y1="17" x2="8" y2="17"></line>
-											<polyline points="10 9 9 9 8 9"></polyline>
-										</svg>
-                                        </span>
-                                        <div class="media-body">
-                                            <p class="mb-1">Average time between two blocks</p>
-                                            <h4 class="mb-0">{{average_time_between_blocks}}</h4>
-                                        </div>
-                                    </div>
+					</div>
+					<div class="col-xl-12  col-lg-6">
+                        <div class="card">
+                            <div class="card-header border-0 pb-0">
+                                <h4 class="card-title">Last 10 blocks of the blockchain</h4>
+                            </div>
+                            <div class="card-body p-0">
+                                <div id="DZ_W_TimeLine" class="widget-timeline dz-scroll height370 my-4 px-4">
+                                    <ul class="timeline">
+                                        {% for block in last_10_blocks %}
+                                        <li>
+                                            <div class="timeline-badge info">
+                                            </div>
+                                            <a class="timeline-panel " href="#">
+                                                <span>{{ block['end_time'] }}</span>
+                                                <h6 class="mb-0"><b>Block</b> {{ block['index'] }} mined by <strong class="text-info">{{ block['miner'] }} {% if block['miner']==miner_name %}(you){% endif %}</strong></h6>
+                                                <p class="mb-0"><b>Hash</b> : {{ block['hash'] }}</p>
+                                                <p class="mb-0"><b>Nonce</b> : {{ block['nonce'] }}</p>
+                                                <p class="mb-0"><b>Transactions</b> : <br>{% for transaction in block['transactions'] %}{{ beautify_transaction(transaction) }}<br>{% endfor %}</p>
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
                                 </div>
                             </div>
-                    </div>
-                    {% if data_longest_blockchain %}
-                    <div class="table-responsive">
-                        <h2>Last 10 blocks of the longest blockchain version</h2>
-                        <table class="table table-responsive-md">
-                            <thead>
-                                <tr>
-                                    <th><strong>ID</strong></th>
-                                    <th><strong>HASH</strong></th>
-                                    <th><strong>NONCE</strong></th>
-                                    <th><strong>START_TIME</strong></th>
-                                    <th><strong>END_TIME</strong></th>
-                                    <th><strong>MINER</strong></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {%for block_data in data_longest_blockchain[::-1] %}
-                                <tr>
-                                    <td><strong>{{block_data["index"]}}</strong></td>
-                                    <td>{{block_data["hash"]}}</td>
-                                    <td>{{block_data["nonce"]}}</td>
-                                    <td>{{block_data["start_time"]}}</td>
-                                    <td>{{block_data["end_time"]}}</td>
-                                    <td>
-                                        {% if block_data["miner"] %}
-                                            {{ block_data["miner"] }}
-                                        {% else %}
-                                            <strong>None</strong>
-                                        {% endif %}
-                                    </td>                                
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% endif %}
-                    {% if fig_forks_blockchain %}
-                    <div class="col-xl-12  col-lg-6 col-sm-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title">All blockchains</h4>
-                            </div>
-                            <div class="card-body">
-                                    <div id='fig_forks_blockchain' class='chart center-block'></div>
-                                    <script type='text/javascript'>
-                                        // hide plotly toolbox
-                                        var graphs = {{ fig_forks_blockchain | safe}};
-                                        Plotly.plot('fig_forks_blockchain', graphs, {}, {displayModeBar: false});
-                                    </script>
-                            </div>
                         </div>
-                    </div>
-                    {% endif %}
-                </div>
+					</div>
+				</div>
+
 			</div>
         </div>
-        
-		
+
+        <!--**********************************
+            Content body end
+        ***********************************-->
+
+
+
         <!--**********************************
             Footer start
         ***********************************-->
@@ -218,7 +199,6 @@
             Footer end
         ***********************************-->
 
-
 	</div>
     <!--**********************************
         Main wrapper end
@@ -227,6 +207,41 @@
     <!--**********************************
         Scripts
     ***********************************-->
+    <script>
+        // change miner honesty with url "/change_miner_honesty/<miner_name>"
+        function change_miner_honesty() {
+            $.get("/change_miner_honesty/", function(data, status){
+                if (status == "success") {
+                    console.log("Miner honesty changed");
+                }
+                else {
+                    console.log("Error while changing miner honesty");
+                }
+            });
+        }
+
+        // change miner activation with url "/change_miner_activation/<miner_name>"
+        function change_miner_activation(miner_name) {
+            $.get("/change_miner_activation", function(data, status){
+                if (status == "success") {
+                    console.log("Miner activation changed");
+                }
+                else {
+                    console.log("Error while changing miner activation");
+                }
+            });
+        }
+
+        // Add event listener to the button to change miner honesty
+        document.getElementById("TurnMinerHonesty").addEventListener("click", function(){
+            change_miner_honesty();
+        });
+
+        // Add event listener to the button to change miner activation
+        document.getElementById("TurnMinerActivation").addEventListener("click", function(){
+            change_miner_activation();
+        });
+    </script>
 	{% include 'javascript_includes.html' %}
 
 </body>

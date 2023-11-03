@@ -36,16 +36,12 @@ class Blockchain:
         ) / len(self.chain)
 
     def load_from_file(self):
-        if not os.path.exists(
-            f"miners_blockchain/blockchain_data_{self.miner_name}.json"
-        ):
+        if not os.path.exists(f"blockchain_data.json"):
             # If the file doesn't exist, create a new blockchain
             return self.genesis_block()
         else:
             # Load the blockchain from the file
-            with open(
-                f"miners_blockchain/blockchain_data_{self.miner_name}.json", "r+"
-            ) as f:
+            with open(f"blockchain_data.json", "r+") as f:
                 chain_data = json.load(f)
 
             chain = []
@@ -70,12 +66,11 @@ class Blockchain:
         # return the last block
         return self.chain[-1]
 
-    def finish_block(self, block, miner_name, num_miners):
+    def finish_block(self, block, miner_name):
         """
         Finish the block by adding the hash, the end_time and the miner.
         :param block: The block to finish
         :param miner_name: The name of the miner who mined the block
-        :param num_miners: The number of miners in the network to generate transactions
         """
         with self.lock:
             last_block = self.get_current_block()
@@ -85,7 +80,7 @@ class Blockchain:
                 # print("Block already exists, block rejected")
                 return False
 
-            print(f"Block {block.index} accepted for miner {miner_name}")
+            print(f"Block {block.index} accepted for {miner_name}")
             # print("Block accepted")
 
             # replace the last block with the new block
@@ -97,22 +92,7 @@ class Blockchain:
                 + (block.end_time - block.start_time).total_seconds()
             ) / (self.number_of_blocks + 1)
             # Generate a new block
-            self.generate_new_block(
-                hash_=block.hash_, winner_name=miner_name, num_miners=num_miners
-            )
-
-            # Read the activation state of the miner
-            for _ in range(max_retries):
-                try:
-                    with open("miners.json", "r") as f:
-                        miners_data = json.load(f)
-                        break
-                except Exception as e:
-                    print(
-                        f"[FILE LOGS]: Erreur lors de la lecture du fichier: {e}. "
-                        f"Retente dans {retry_delay} secondes..."
-                    )
-                    time.sleep(retry_delay)
+            self.generate_new_block(hash_=block.hash_, winner_name=miner_name)
 
             return True
 
@@ -120,7 +100,7 @@ class Blockchain:
     def publish_block(block, client):
         client.publish("blockchain/blocks", json.dumps(block.to_dict()))
 
-    def validate_and_add_block(self, received_block, num_miners):
+    def validate_and_add_block(self, received_block):
         """
         Verify the block and add it to the blockchain if it's valid.
         The block comes from another miner.
@@ -183,7 +163,6 @@ class Blockchain:
             hash_=received_block.hash_,
             winner_name=received_block.miner,
             transactions=remaining_transactions,
-            num_miners=num_miners,
         )
 
         return True
@@ -245,7 +224,7 @@ class Blockchain:
 
         # Compare the length of the blockchain of the miner with the longest blockchain
         if len(self.chain) < len(longest_blockchain) - 3:
-            print(f"[INFO]: Applying consensus for miner {self.miner_name}")
+            print(f"[INFO]: Applying consensus for {self.miner_name}")
             # If the blockchain of the miner is 5 blocks behind the longest blockchain, copy the longest blockchain and
             # replace the blockchain of the miner
             self.chain = longest_blockchain
@@ -267,15 +246,12 @@ class Blockchain:
         """
         raise NotImplementedError
 
-    def generate_new_block(
-        self, hash_, winner_name, transactions=None, num_miners=None
-    ):
+    def generate_new_block(self, hash_, winner_name, transactions=None):
         """
         Generate a new block and append it to the chain.
         :param hash_: hash of the last block
         :param winner_name: name of the miner who mined the block
         :param transactions: list of transactions to add to the new block (if the miner have some unmined transactions)
-        :param num_miners: number of miners in the network (for generating transactions)
         """
         # print(f"Generating new block, hash: {hash_}")
         # Create a new block and append it to the chain
@@ -288,15 +264,6 @@ class Blockchain:
                 amount=CONFIG["REWARD_TOKEN"],
             )
         ]
-        # Add random transactions to the new block
-        new_block.transactions.append(
-            Transaction(
-                sender=self.miner_name,
-                recipient=f"Miner{random.randint(1, num_miners)}",
-                amount=random.randint(1, 10),
-                timestamp=datetime(2023, 10, 26, 16, 26, 52, 91342),
-            )
-        )
         if transactions:
             # Add the transactions of the last block not mined
             # (there are only transactions not already in the blockchain)
@@ -311,14 +278,12 @@ class Blockchain:
         self.number_of_blocks += 1
 
     def save_blockchain(self):
-        with open(
-            f"miners_blockchain/blockchain_data_{self.miner_name}.json", "w"
-        ) as f:
+        with open(f"blockchain_data.json", "w") as f:
             json.dump([b.to_dict() for b in self.chain], f, indent=4)
 
-    def save_miners(self, miners_data):
-        with open("miners.json", "w") as f:
-            json.dump(miners_data, f, indent=4)
+    def save_miners(self, miner_data):
+        with open("miner.json", "w") as f:
+            json.dump(miner_data, f, indent=4)
 
     def __str__(self) -> str:
         return f"Blockchain: {[str(b) for b in self.chain]}"
@@ -327,13 +292,13 @@ class Blockchain:
         print(f"Registering miner {self.miner_name}")
         with self.lock:
             try:
-                with open("miners.json", "r") as f:
-                    miners_data = json.load(f)
+                with open("miner.json", "r") as f:
+                    miner_data = json.load(f)
             except (FileNotFoundError, json.JSONDecodeError):
-                miners_data = []
+                miner_data = {}
 
             # Check if the miner already exists
-            if any(miner["name"] == self.miner_name for miner in miners_data):
+            if miner_data:
                 return  # The miner is already registered
 
             new_miner_data = {
@@ -342,9 +307,7 @@ class Blockchain:
                 "honesty": True,
             }
 
-            miners_data.append(new_miner_data)
-
-            self.save_miners(miners_data)
+            self.save_miners(new_miner_data)
 
     @staticmethod
     def get_longest_blockchain_from_miners():
@@ -353,8 +316,8 @@ class Blockchain:
         """
         for _ in range(max_retries):
             try:
-                with open("miners.json", "r") as f:
-                    miners_data = json.load(f)
+                with open("miner.json", "r") as f:
+                    miner_data = json.load(f)
                     break
             except Exception as e:
                 print(
@@ -364,26 +327,8 @@ class Blockchain:
                 time.sleep(retry_delay)
 
         longest_blockchain = None
-        for miner in miners_data:
-            if miner["activated"]:
-                for _ in range(max_retries):
-                    try:
-                        with open(
-                            f"miners_blockchain/blockchain_data_{miner['name']}.json",
-                            "r",
-                        ) as f:
-                            blockchain = json.load(f)
-                            break
-                    except Exception as e:
-                        print(
-                            f"[FILE LOGS]: Erreur lors de la lecture du fichier: {e}. "
-                            f"Retente dans {retry_delay} secondes..."
-                        )
-                        time.sleep(retry_delay)
-                if longest_blockchain is None:
-                    longest_blockchain = blockchain
-                elif len(blockchain) > len(longest_blockchain):
-                    longest_blockchain = blockchain
+
+        # TODO: implement the API to get the blockchain of the miners
 
         return longest_blockchain
 
