@@ -396,9 +396,9 @@ def view_blockchain(miner_name):
                     [block for block in blockchain if block["miner"] == miner["name"]]
                 )
                 # Get the number of tokens earned by the miner
-                miner["nb_tokens_earned"] = (
-                    miner["nb_blocks_mined"] * CONFIG["REWARD_TOKEN"]
-                )
+                miner["nb_tokens_earned"] = (miner["nb_blocks_mined"] - 1) * CONFIG[
+                    "REWARD_TOKEN"
+                ]
             break  # Si la lecture réussit, sortez de la boucle
         except Exception as e:
             if show_logs:
@@ -459,8 +459,8 @@ def get_miners():
                         )
                         # Get the number of tokens earned by the miner
                         miner["nb_tokens_earned"] = (
-                            miner["nb_blocks_mined"] * CONFIG["REWARD_TOKEN"]
-                        )
+                            miner["nb_blocks_mined"] - 1
+                        ) * CONFIG["REWARD_TOKEN"]
                     break  # Si la lecture réussit, sortez de la boucle
                 except Exception as e:
                     if show_logs:
