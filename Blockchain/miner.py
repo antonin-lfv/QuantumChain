@@ -57,6 +57,10 @@ class Miner:
             # The miner is not activated, he will not validate the block
             return
 
+        if not self.honesty:
+            # The miner is not honest, he will not validate the block
+            return
+
         # Create the block object
         received_block = Block.from_dict(block_dict)
         # Validate the block

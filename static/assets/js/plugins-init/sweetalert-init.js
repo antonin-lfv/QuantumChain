@@ -5,13 +5,20 @@
 Sweet-alert JS
 *******************/
 
-    }, document.querySelector(".sweet-success").onclick = function () {
-        swal("Operation Successful !!", "Miner has been updated !!", "success")
+    }, document.querySelector(".sweet-success-honest").onclick = function () {
+        swal("Operation Successful !!", "Miner's honesty has been updated !!", "success")
         .then((value) => {
             if (value) {
                 location.reload();
             }
         });
-});
+}, document.querySelector(".sweet-success-active").onclick = function () {
+        swal("Operation Successful !!", "Miner's activity has been updated !!", "success")
+        .then((value) => {
+            if (value) {
+                location.reload();
+            }
+        });
+})
 
 (jQuery);

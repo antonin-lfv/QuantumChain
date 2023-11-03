@@ -18,10 +18,6 @@ with open("Blockchain/config.json", "r") as f:
     CONFIG = json.load(f)
 
 
-# TODO : Ajouter un bouton pour stopper le minage des miners un à un pour arreter le réseau sans casser les
-# fichiers json (comme ça le status des miners est sauvegardé et est toujours visible sur le dashboard et à jour)
-
-
 def beautify_transaction(transaction):
     """
     Beautify a transaction
