@@ -135,16 +135,24 @@ class Miner:
                     print(f"[INFO]: New miner discovered: {miner_name}")
 
     def start(self):
-        self.client.loop_start()
-        # Start the thread that will send a discovery message periodically
-        self.publish_discovery_message()  # Appeler une fois au début
-        self.discovery_thread = threading.Thread(
-            target=self.publish_discovery_periodically
-        )
-        self.discovery_thread.daemon = (
-            True  # Ceci assure que le thread se termine avec le programme
-        )
-        self.discovery_thread.start()
+        try:
+            self.client.loop_start()
+            # Start the thread that will send a discovery message periodically
+            self.publish_discovery_message()  # Call once at the beginning
+            self.discovery_thread = threading.Thread(
+                target=self.publish_discovery_periodically
+            )
+            self.discovery_thread.daemon = (
+                True  # This ensures the thread ends with the program
+            )
+            self.discovery_thread.start()
+
+            # Rest of your start method...
+
+        except KeyboardInterrupt:
+            # Handle the cleanup when the KeyboardInterrupt is received
+            print("Shutting down...")
+            self.cleanup()
 
     def publish_discovery_periodically(self):
         while True:
@@ -170,6 +178,17 @@ class Miner:
             json.dumps(discovery_info),
             retain=True,  # To ensure that the message is received by the other miners
         )
+
+    def cleanup(self):
+        # Publish a final message to clear the retained message since the miner is going offline
+        self.client.publish(
+            f"blockchain/discovery/{self.miner_name}",
+            None,  # Publishing None will clear the retained message
+            retain=True,
+        )
+        # Properly end the MQTT communication with the broker
+        self.client.loop_stop()
+        self.client.disconnect()
 
     def mine_block(self):
         while True:
