@@ -16,6 +16,8 @@
     <a href="#mode-demploi-version-réseau">Mode d'emploi version réseau</a>
 </p>
 
+> **Note:** Une version multi-threadée est disponible sur la branche `main`.
+
 # *Introduction*
 
 Cette version du projet de création d'un simulateur de blockchain est une version réseau. Elle permet de simuler un réseau de mineurs qui communiquent entre eux via un broker MQTT et une API. Chaque mineur est un nœud du réseau et possède sa propre blockchain. Les mineurs communiquent entre eux pour mettre à jour leur blockchain et ainsi maintenir la cohérence du réseau.
