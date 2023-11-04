@@ -5,6 +5,10 @@ from api import run_api
 from miner import Miner
 import threading
 import json
+import time
+from stopControl import StopControl
+
+stop_control = StopControl()
 
 
 # get app config from app_config.json
@@ -19,6 +23,8 @@ def generate_random_string(length):
 
 
 def create_and_start_miner(mqtt_broker_ip):
+    global stop_control
+
     # Get miner data
     with open("miner.json", "r") as f:
         # if empty, miner_data = {}
@@ -43,8 +49,10 @@ def create_and_start_miner(mqtt_broker_ip):
     miner.start()
 
     # Start the mining thread
-    thread = threading.Thread(target=miner.mine_block)
-    thread.start()
+    mining_thread = threading.Thread(
+        target=miner.mine_block, args=(stop_control,), daemon=True
+    )
+    mining_thread.start()
 
     # Start the miner API thread
     api_thread = threading.Thread(target=run_api, args=(miner,), daemon=True)
@@ -70,6 +78,15 @@ def create_and_start_miner(mqtt_broker_ip):
     # Save the miner data
     with open("miner.json", "w") as f:
         json.dump(miner_data, f, indent=4)
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        stop_control.request_stop()
+        mining_thread.join()
+        miner.stop()
+        print("[INFO] Miner stopped")
 
     return
 

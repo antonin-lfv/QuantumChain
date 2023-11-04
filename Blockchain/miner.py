@@ -6,6 +6,7 @@ import json
 import paho.mqtt.client as mqtt
 import time
 import threading
+from stopControl import StopControl
 
 # Config for blockchain
 with open("config.json", "r") as f:
@@ -116,9 +117,9 @@ class Miner:
             # === Discover a new miner ===
             # A new miner is discovered, add it to the list of other miners
             miner_name = msg.topic.split("/")[-1]
+            # Ensure that the miner is not himself after a reconnection
             if miner_name != self.miner_name:
-                # Ensure that the miner is not himself after a reconnection
-                miner_info = json.loads(msg.payload.decode())
+                miner_info = msg.payload.decode()
                 if not miner_info:
                     # If the miner_info is empty, the miner is offline
                     # Remove the miner from the list of other miners thanks to his name
@@ -131,28 +132,21 @@ class Miner:
                     if len(self.other_miners) < number_of_miners_before:
                         print(f"[INFO]: Miner {miner_name} is offline")
                 elif miner_info not in self.other_miners:
+                    miner_info = json.loads(miner_info)
                     self.other_miners.append(miner_info)
                     print(f"[INFO]: New miner discovered: {miner_name}")
 
     def start(self):
-        try:
-            self.client.loop_start()
-            # Start the thread that will send a discovery message periodically
-            self.publish_discovery_message()  # Call once at the beginning
-            self.discovery_thread = threading.Thread(
-                target=self.publish_discovery_periodically
-            )
-            self.discovery_thread.daemon = (
-                True  # This ensures the thread ends with the program
-            )
-            self.discovery_thread.start()
-
-            # Rest of your start method...
-
-        except KeyboardInterrupt:
-            # Handle the cleanup when the KeyboardInterrupt is received
-            print("Shutting down...")
-            self.cleanup()
+        self.client.loop_start()
+        # Start the thread that will send a discovery message periodically
+        self.publish_discovery_message()  # Call once at the beginning
+        self.discovery_thread = threading.Thread(
+            target=self.publish_discovery_periodically
+        )
+        self.discovery_thread.daemon = (
+            True  # This ensures the thread ends with the program
+        )
+        self.discovery_thread.start()
 
     def publish_discovery_periodically(self):
         while True:
@@ -179,7 +173,8 @@ class Miner:
             retain=True,  # To ensure that the message is received by the other miners
         )
 
-    def cleanup(self):
+    def stop(self):
+        print(f"[INFO]: Miner {self.miner_name} is stopping")
         # Publish a final message to clear the retained message since the miner is going offline
         self.client.publish(
             f"blockchain/discovery/{self.miner_name}",
@@ -190,8 +185,8 @@ class Miner:
         self.client.loop_stop()
         self.client.disconnect()
 
-    def mine_block(self):
-        while True:
+    def mine_block(self, stop_control: StopControl):
+        while not stop_control.should_stop():
             last_block_data = (
                 self.blockchain.get_current_block()
             )  # Get the last block being mined

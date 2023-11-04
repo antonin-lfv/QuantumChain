@@ -1,3 +1,4 @@
+import numpy as np
 from flask import Blueprint, render_template, jsonify
 import json
 import os
@@ -7,6 +8,7 @@ import plotly.graph_objects as go
 import plotly
 import requests
 import time
+import matplotlib.pyplot as plt
 
 BLP_general = Blueprint("BLP_general", __name__, template_folder="templates/general")
 
@@ -248,16 +250,22 @@ def blockchains_overview():
             edge_x.extend([x0, x1, None])
             edge_y.extend([-y0, -y1, None])
 
-        # Create a color for each miner
-        miner_color = []
-        for name in miner_names:
-            # Extract the miner id from the name
-            miner_id = name.split("_")[1] if name != "First block" else 0
-            # Use the hash to get a unique integer for the string
-            hashed_id = hash(miner_id)
-            # Then take the modulo of the number of color to fit the color range
-            color = hashed_id % (len(connected_miners) + 1)
-            miner_color.append(color)
+        # Unique list of miner names for color mapping
+        unique_miner_names = list(set(miner_names))
+        # Assign an integer index to each unique miner name
+        color_indices = np.linspace(0, 1, len(unique_miner_names))
+        # Convert float values to a color using a colormap
+        colors = [plt.cm.rainbow(color) for color in color_indices]
+        # Convert matplotlib RGBA colors to a format that Plotly understands, i.e., 'rgba(r,g,b,a)'
+        plotly_colors = [
+            "rgba({},{},{},{})".format(int(r * 255), int(g * 255), int(b * 255), a)
+            for r, g, b, a in colors
+        ]
+        # Create a dictionary to map miner names to their corresponding color
+        color_map = dict(zip(unique_miner_names, plotly_colors))
+        # Map each miner name in the original list to its color
+        miner_colors = [color_map[name] for name in miner_names]
+
         # Create figure
         node_trace = go.Scatter(
             y=node_x,
@@ -267,10 +275,8 @@ def blockchains_overview():
             # Color depending on the miner, discrete colors
             marker=dict(
                 showscale=False,
-                colorscale="Rainbow",
                 reversescale=True,
-                # Color is the number of the miner
-                color=[c for c in miner_color],
+                color=miner_colors,
                 size=5,
                 colorbar=dict(
                     thickness=15,
