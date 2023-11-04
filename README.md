@@ -15,7 +15,7 @@
     <a href="#mode-demploi-version-multi-threading">Mode d'emploi version multi-threading</a>
 </p>
 
-> **Note:** Une version en ligne est disponible sur la branche `online_app`.
+> **Note:** Une version avec les mineurs en réseau est disponible sur la branche `online_app`.
 
 # Introduction
 
