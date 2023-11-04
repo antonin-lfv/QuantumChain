@@ -9,3 +9,5 @@ requests
 paho-mqtt
 networkx
 matplotlib
+graphviz
+pydot

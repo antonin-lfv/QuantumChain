@@ -5,7 +5,7 @@
 git clone
 git checkout online_app
 
-depuis le dossier Blockchain créer app_config.json en mettant l'ip du broker MQTT, l'ip de l'API et le port de l'API
+depuis le dossier Blockchain créer app_config.json en mettant l'ip du broker MQTT, l'ip de l'API (votre IP) et le port de l'API (on prendra 5101)
 ```
 {
   "MQTT_BROKER_IP": "ip_broker"
@@ -16,6 +16,11 @@ depuis le dossier Blockchain créer app_config.json en mettant l'ip du broker MQ
 Installer les dépendances
 ```
 pip install -r requirements.txt
+```
+
+Sur linux il faudra possiblement installer graphviz avec apt-get
+```
+sudo apt-get install graphviz
 ```
 
 run mosquitto broker (only on one device)
@@ -40,11 +45,12 @@ chmod u+x clean.sh
 ./clean.sh
 ```
 
-Pour redémarrer mosquitto broker (pour vider les topics, important si un mineur a été stoppé via CTRL+C)
-```
-brew services restart mosquitto
-```
-
 Sinon 
 - supprimer le fichier blockchain_data.json
 - remplacer le contenu de miner.json par {}
+
+
+Pour redémarrer mosquitto broker (pour vider les topics si besoin)
+```
+brew services restart mosquitto
+```
