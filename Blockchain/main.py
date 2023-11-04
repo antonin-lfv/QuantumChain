@@ -83,8 +83,8 @@ def create_and_start_miner(mqtt_broker_ip):
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        miner.stop()
         stop_control.request_stop()
+        miner.stop()
         mining_thread.join()
         print("[INFO] Miner stopped")
 
