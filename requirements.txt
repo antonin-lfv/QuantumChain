@@ -8,3 +8,4 @@ pip
 requests
 paho-mqtt
 networkx
+matplotlib
