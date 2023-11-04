@@ -131,7 +131,7 @@ class Miner:
                     ]
                     if len(self.other_miners) < number_of_miners_before:
                         print(f"[INFO]: Miner {miner_name} is offline")
-                elif miner_info not in self.other_miners:
+                elif json.loads(miner_info) not in self.other_miners:
                     miner_info = json.loads(miner_info)
                     self.other_miners.append(miner_info)
                     print(f"[INFO]: New miner discovered: {miner_name}")

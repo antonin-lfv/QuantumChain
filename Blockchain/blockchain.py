@@ -83,7 +83,6 @@ class Blockchain:
                 return False
 
             print(f"Block {block.index} accepted for {miner_name}")
-            # print("Block accepted")
 
             # replace the last block with the new block
             self.chain[-1] = block
