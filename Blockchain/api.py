@@ -25,7 +25,7 @@ def get_chain_length():
 
 @app.route("/get_connected_miners", methods=["GET"])
 def get_connected_miners():
-    print(miner_instance.other_miners)
+    # print(miner_instance.other_miners)
     return jsonify(miner_instance.other_miners), 200
 
 

@@ -110,7 +110,8 @@ class Miner:
 
             # Consensus : if the blockchain of the miner (honest) is 5 blocks behind the longest blockchain,
             # he should start mining on the longest blockchain
-            if self.honesty:
+            if self.honesty and self.other_miners:
+                # We verify that the miner is honest and that there are other miners
                 self.blockchain.apply_consensus(self.other_miners)
 
         elif msg.topic.startswith("blockchain/discovery/"):
@@ -157,11 +158,13 @@ class Miner:
         # Verify if the miner is still activated
         if self.activated:
             # Miner is still activated, publish a message with his info
-            discovery_info = {
-                "name": self.miner_name,
-                "ip": APP_CONFIG["API_IP_FLASK_MINER"],
-                "port": APP_CONFIG["API_PORT_FLASK_MINER"],
-            }
+            discovery_info = json.dumps(
+                {
+                    "name": self.miner_name,
+                    "ip": APP_CONFIG["API_IP_FLASK_MINER"],
+                    "port": APP_CONFIG["API_PORT_FLASK_MINER"],
+                }
+            )
         else:
             # Miner is not activated, publish an empty message
             discovery_info = None
@@ -169,7 +172,7 @@ class Miner:
         # Publish the discovery message
         self.client.publish(
             f"blockchain/discovery/{self.miner_name}",
-            json.dumps(discovery_info),
+            discovery_info,
             retain=True,  # To ensure that the message is received by the other miners
         )
 
