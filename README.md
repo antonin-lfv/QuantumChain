@@ -10,96 +10,104 @@
 
 <p align="center">
   <a href="#introduction">Introduction</a> •
-    <a href="#mode-demploi">Mode d'emploi</a> •
-    <a href="#simulateur-de-blockchain-et-implémentation-des-mineurs">Implémentation</a> •
-    <a href="#interface-du-système-blockchain">Interface</a> •
-    <a href="#résultats-de-simulation">Résultats</a> •
-    <a href="#conclusion">Conclusion</a>
+    <a href="#implémentation-de-la-version-multi-threading">Implémentation de la version multi-threading</a> •
+    <a href="#interface-de-la-version-multi-threading">Interface de la version multi-threading</a> •
+    <a href="#mode-demploi-version-multi-threading">Mode d'emploi version multi-threading</a>
 </p>
+
+> **Note:** Une version en ligne est disponible sur la branche `online_app`.
 
 # Introduction
 
-L'objectif de ce projet est de développer un simulateur de blockchain de type "Proof Of Work" comme le Bitcoin. Pour cela nous utiliserons le langage de programmation python. Dans un soucis d'interactivité nous avons crée une interface sur laquelle on pourra visualiser toutes les données pertinentes ainsi qu'agir sur la blockchain et ses acteurs. 
-Pour réaliser ce projet nous avons utilisé les technologies suivantes : Flask pour l'interface, Threads pour gérer les mineurs indépendemment, MQTT pour l'envoie des blocks entre les mineurs, Plotly pour les graphiques techniques.
+Cette version du simulateur de blockchain est une implémentation de la blockchain de type "Proof Of Work" (PoW) comme le Bitcoin. Le simulateur est écrit en Python et utilise le protocole MQTT pour la communication entre les mineurs, qui sont eux déployés en multi-threading. L'interface utilisateur est développée en HTML, CSS et JavaScript.
 
-Tout le code du projet est disponible sur le repositoire *[Github](https://github.com/antonin-lfv/QuantumChain)*. Le *mode d'emploi* est disponible à la fin de ce rapport.
+# *Implémentation de la version multi-threading*
 
-# Mode d'emploi
+Dans le cadre d'une simulation de blockchain Proof of Work (PoW) multi-threadée, l'architecture envisagée est conçue pour fonctionner intégralement sur un seul ordinateur. Ce dernier fait office d'une plateforme où n mineurs virtuels sont crées, chacun exécuté dans un thread séparé pour imiter la distribution et la concurrence que l'on retrouve dans une véritable blockchain. Chaque mineur possède sa propre copie de la blockchain, qui initie avec le bloc "Genèse" dans le cas où il s'agit d'un nouvel ajout au réseau de simulation.
+
+Au cœur de cette simulation réside le protocole de communication MQTT, essentiel pour l'échange d'informations entre les mineurs. Les mineurs s'abonnent au topic *`"blockchain/blocks"`*, qui sert de canal pour la diffusion et la réception des blocs nouvellement minés.
+
+Le processus de minage se déroule comme suit : lorsqu'un mineur parvient à calculer le hash adéquat qui répond aux critères définis par la difficulté de la blockchain, il procède à la publication de ce bloc sur le réseau. La transmission est faite à travers le protocole MQTT précédemment mentionné, en utilisant le même topic *`"blockchain/blocks"`* pour informer tous les participants du réseau du nouveau bloc.
+
+Quand un bloc est reçu par le biais de MQTT, le comportement du mineur récepteur dépendra de son état : honnête ou malhonnête. Dans le cas d'un mineur intègre, une vérification de l'intégrité du bloc reçu est effectuée. Si le bloc est authentifié et jugé valide, il est alors ajouté à la copie locale de la blockchain que détient le mineur. Par opposition, un mineur malhonnête est programmé pour rejeter systématiquement les blocs qui lui parviennent, illustrant ainsi les scénarios de sécurité et de confiance auxquels doivent faire face les réseaux blockchain réels.
+
+Pour ce qui est de la gestion du consensus au sein de cette simulation, la tâche est simplifiée par le fait que tous les mineurs résident sur la même machine. Ainsi, pour établir le consensus, il suffit de comparer les longueurs des différentes copies de la blockchain présentes sur le disque. Le système sélectionne la chaîne la plus longue, qui représente la majorité et la validité selon les règles du protocole PoW, et la copie dans le fichier de la blockchain du mineur qui cherche à actualiser son état en fonction du consensus. Ce mécanisme est crucial car il garantit l'uniformité et la cohérence du réseau de simulation en imitant le fonctionnement de la blockchain dans un environnement distribué.
+
+
+# *Interface de la version multi-threading*
+
+L'interface utilisateur joue un rôle essentiel dans la visualisation et la gestion d'un simulateur de blockchain. Dans ce contexte, l'interface est élaborée avec l'aide de Flask, un micro-framework Python populaire pour le développement web, qui permet de créer une expérience utilisateur fluide et intuitive.
+
+## *Page d'accueil*
+
+### Vue d'ensemble du système 
+Dès l'arrivée sur la page d'accueil, l'utilisateur est immédiatement informé de l'état actuel du système. Les informations clés, telles que le nombre de mineurs actuellement actifs, la taille de la blockchain la plus longue, la récompense en tokens attribuée pour chaque bloc miné et le temps moyen nécessaire pour découvrir un nouveau bloc, sont affichées.
+
+### Détails des blocs
+Pour une analyse plus approfondie, les dix derniers blocs de la blockchain la plus longue sont listés, affichant des détails tels que son index dans la chaîne, le hash unique du bloc, le nonce, la date de création du bloc par le mineur qui l'a miné, la date de validation du bloc et le mineur qui a découvert le bloc.
+
+![dashboard_1_multi_thread](images/dashboard_1_multi_thread.png)
+
+### Visualisation des forks
+Un aspect crucial de toute blockchain est la possibilité de forks, où différentes versions de la chaîne peuvent coexister. Un graphique est intégré pour visualiser toutes les blockchain en cours, aidant à identifier et à comprendre les forks et leurs origines. Chaque mineur est associé à une couleur pour bien les identifier sur le graphique. Au survol des points sur le graphique le hash, le miner et l'index du bloc apparait.
+
+![dashboard_2_multi_thread](images/dashboard_2_multi_thread.png)
+
+## *Page des mineurs*
+
+### Vue d'ensemble des mineurs
+Cette page est dédiée à la présentation des caractéristiques de tous les mineurs, qu'ils soient actifs ou non. Les informations clés incluent la quantité de tokens gagnés à travers les récompenses de minage, le nombre total de blocs qu'ils ont découverts, la taille de leur version actuelle de la blockchain, et un indicateur de leur honnêteté.
+
+![miners_page_multi_thread](images/miners_page_multi_thread.png)
+  
+## *Page de détails d'un mineur spécifique*
+
+### Caractéristiques du mineur
+Cette section offre une vue détaillée de la performance et des attributs d'un mineur spécifique. Elle indique si le mineur est actuellement actif, son niveau d'honnêteté (avec un bouton pour le modifier), le nombre total de tokens qu'il a gagnés par récompense après avoir miné un bloc et le nombre de blocs qu'il a minés.
+
+### Historique des transactions
+Les vingt dernières transactions impliquant le mineur (en tant qu'émetteur ou receveur) sont affichées pour une meilleure compréhension de ses activités.
+
+### Détails des blocs
+Tout comme la page d'accueil, les dix derniers blocs minés par ce mineur sont listés avec des détails approfondis, offrant une vue complète de sa contribution à la blockchain.
+
+![miner_details_1_multi_thread](images/miner_details_1_multi_thread.png)
+
+
+# *Mode d'emploi version multi-threading*
+
 ## Installation
 
+```bash
+git clone https://github.com/antonin-lfv/QuantumChain.git
 ```
+
+```bash
 pip install -r requirements.txt
 ```
 
 ## Lancer la blockchain
 
-Se déplacer dans le dossier `Blockchain`
-```
-cd Blockchain
-```
-
-Lancer le fichier main.py
-```
-python main.py
-```
-
-## Lancer l'interface
-
-Si la blockchain n'a jamais été lancée, il faut d'abord lancer la blockchain comme indiqué ci-dessus.
-
+Se déplacer dans le dossier *`Blockchain/`* et lancer le fichier main.py
 ```bash
-flask run
+python3 main.py
 ```
 
 ## Réinitialiser la simulation
 
+Soit:
 - Modifier le contenu de miners.json en une liste vide `[]`
 - Vider le dossier `Blockchain/miners_blockchain`
 
-# Simulateur de Blockchain et Implémentation des Mineurs
+ou si vous êtes sur un OS Unix, depuis le dossier *`Blockchain/`*
+```bash
+chmod u+x clean.sh 
+./clean.sh
+```
 
-Le simulateur de blockchain repose sur le mécanisme de preuve de travail (PoW). Au début, $n$ mineurs sont créés, chacun fonctionnant sur un thread distinct. Chaque mineur détient une copie du bloc "Genèse" pour initialiser sa blockchain. 
+## Lancer l'interface
 
-Le cœur de l'activité des mineurs est le minage. Cela implique de changer un "Nonce" (un nombre entier aléatoire) jusqu'à ce que le hash du bloc, dérivé de l'algorithme SHA-256, commence par $k$ zéros. Trouver un tel bloc est une tâche ardue, mais une fois qu'un mineur réussit, il transmet ce bloc à tous les autres mineurs via le protocole MQTT. Il ajoute également ce bloc à sa blockchain et prépare une transaction de récompense pour lui-même dans le prochain bloc à miner, avec une récompense fixée à 5.8 tokens.
-
-La réception d'un bloc par un mineur peut entraîner deux scénarios :
-1. *Mineur Honnête* : Le mineur vérifie d'abord l'intégrité du bloc reçu. Il contrôle l'index du bloc, les spécificités du hash, le hash précédent, et calcule le hash actuel. Si le bloc est validé, il est ajouté à sa blockchain. En outre, si certaines transactions qu'il était en train de valider figurent déjà dans le bloc reçu, il les retire de sa liste de transactions en attente et les remplace par d'autres transactions non validées pour le prochain bloc. 
-2. *Mineur Malhonnête* : Il refusera tous les blocs reçus et continuera de miner uniquement sur sa propre blockchain.
-
-Techniquement, chaque mineur est créé dans un thread distinct et possède un nom unique. Il s'abonne au topic MQTT `blockchain/blocks` pour partager et recevoir des blocs. Lors du minage, le mineur varie le Nonce du bloc en cours et calcule le hash avec SHA-256. Une fois qu'il trouve un hash satisfaisant la condition des $k$ zéros, il ajoute ses détails au bloc et l'intègre à sa blockchain. Il met à jour ensuite les statistiques de sa blockchain pour l'interface utilisateur.
-
-Lorsqu'un mineur reçoit un bloc d'un autre mineur via MQTT, il agit selon sa nature (honnête ou malhonnête). Un mineur honnête vérifie l'intégrité du bloc, et s'il est validé, il l'intègre à sa blockchain. En cas de malhonnêteté, il refusera systématiquement les blocs entrants.
-
-Enfin, pour assurer la cohérence de la blockchain, si un mineur honnête observe que sa version de la blockchain est en retard de plus de 3 blocs par rapport à la chaîne la plus longue, il adoptera cette dernière. Un mineur malhonnête, en revanche, restera fidèle à sa propre version.
-
-# Résultats de simulation
-
-## Simulation avec que des mineurs honnêtes 
-
-On commence avec 5 mineurs honnêtes, ils minent tous et acceptent de recevoir des blocs d'autres mineurs pour le valider. Si on affiche les blockchains on obtient une seule version.
-
-![image](images/honest_1.png)
-
-Il se peut qu'un mineur trouve un bloc juste avant qu'un autre envoie le siens et donc il va se créer un Fork ou le mineur va être isolé. Voila le résultat.
-
-![image](images/honest_fork.png)
-
-Quand la blockchain la plus longue est 3 blocs devant alors le mineur isolé se déplace sur cette dernière.
-
-![image](images/honest_after_fork.png)
-
-
-## Simulation en ajoutant un mineurs malhonnêtes
-
-Lorsqu'on ajoute un mineur malhonnête il va créer un fork dès qu'il va miner un bloc, par exemple:
-
-![image](images/dishonest_1.png)
-
-Et ce mineur va rester sur sa version tant qu'il est malhonnête. Si il parvient à être 3 blocs plus grand que la blockchain principale alors il va attirer tous les autres mineurs et va donc gagner énormément de tokens. Mais ce scénario est impossible du fait de la loi des grands nombres.
-S'il redevient honnête alors il va se remettre sur la blockchain principale dès la prochaine réception d'un bloc d'un autre mineur.
-
-Notre exemple devient alors :
-
-![image](images/dishonest_after_become_honest.png)
-
-Il perd donc tous les tokens gagné lorsqu'il était malhonnête.
+Dans un autre terminal, lancer l'interface Flask
+```bash
+flask run
+```
