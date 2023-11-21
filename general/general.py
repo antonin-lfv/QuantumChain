@@ -90,6 +90,8 @@ def home():
                     )
                 time.sleep(retry_delay)
 
+    average_time_between_blocks = None
+
     for _ in range(max_retries):
         try:
             # Take the 10 last elements of the file with the most elements

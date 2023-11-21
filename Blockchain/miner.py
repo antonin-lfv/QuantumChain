@@ -18,7 +18,7 @@ show_logs = False  # Show logs in the console
 
 
 class Miner:
-    def __init__(self, miner, num_miners):
+    def __init__(self, miner, num_miners, miner_to_avoid=None):
         self.blockchain = Blockchain(miner)
         self.miner_name = miner  # Name of the miner
         self.num_miners = (
@@ -26,6 +26,9 @@ class Miner:
         )
         self.activated = True  # If the miner is activated or not
         self.honesty = True  # If the miner is honest or not
+        self.miner_to_avoid = (
+            miner_to_avoid  # The miner to avoid (for focused dishonesty)
+        )
 
         # MQTT client to publish and receive blocks
         self.client = mqtt.Client()
@@ -46,6 +49,10 @@ class Miner:
         After receiving a block, the miner validates it and adds it to its blockchain depending on the honesty.
         """
         block_dict = json.loads(msg.payload.decode())
+        miner_id_block_received = int(
+            block_dict["miner"].replace("Miner", "")
+        )  # Id of the miner who mined the block
+
         # If it's the block of himself, skip to the next iteration
         if block_dict["miner"] == self.miner_name:
             return
@@ -57,8 +64,12 @@ class Miner:
             # The miner is not activated, he will not validate the block
             return
 
-        if not self.honesty:
-            # The miner is not honest, he will not validate the block
+        if not self.honesty or miner_id_block_received == self.miner_to_avoid:
+            # The miner is not honest or the miner who mined the block is the miner to avoid,
+            # he will not validate the block
+            print(
+                f"[INFO]: Block mined by {block_dict['miner']} is ignored because he is avoided by {self.miner_name}"
+            )
             return
 
         # Create the block object

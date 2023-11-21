@@ -85,7 +85,9 @@ class Blockchain:
                 # print("Block already exists, block rejected")
                 return False
 
-            print(f"Block {block.index} accepted for miner {miner_name}")
+            print(
+                f"[IMPORTANT] --- Block {block.index} accepted for miner {miner_name} ---"
+            )
             # print("Block accepted")
 
             # replace the last block with the new block
@@ -311,7 +313,6 @@ class Blockchain:
         return f"Blockchain: {[str(b) for b in self.chain]}"
 
     def register_miner(self):
-        print(f"Registering miner {self.miner_name}")
         with self.lock:
             try:
                 with open("miners.json", "r") as f:
