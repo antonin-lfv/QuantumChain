@@ -234,10 +234,10 @@ class Blockchain:
         longest_blockchain = [Block.from_dict(b) for b in longest_blockchain]
 
         # Compare the length of the blockchain of the miner with the longest blockchain
-        if len(self.chain) < len(longest_blockchain) - 3:
+        if len(self.chain) < len(longest_blockchain) - CONFIG["NUMBER_BLOCKS_TO_MERGE"]:
             print(f"[INFO]: Applying consensus for {self.miner_name}")
-            # If the blockchain of the miner is 5 blocks behind the longest blockchain, copy the longest blockchain and
-            # replace the blockchain of the miner
+            # If the blockchain of the miner is "NUMBER_BLOCKS_TO_MERGE" blocks behind the longest blockchain,
+            # copy the longest blockchain and replace the blockchain of the miner
             self.chain = longest_blockchain
             self.save_blockchain()
             self.number_of_blocks = len(self.chain)
