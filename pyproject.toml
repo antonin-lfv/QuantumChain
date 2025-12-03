@@ -1,0 +1,21 @@
+[project]
+name = "quantumchain"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13.1"
+dependencies = [
+    "flask>=3.1.2",
+    "flask-nav>=0.6",
+    "graphviz>=0.21",
+    "jsons>=1.6.3",
+    "matplotlib>=3.10.7",
+    "networkx>=3.6",
+    "numpy>=2.3.5",
+    "paho-mqtt>=2.1.0",
+    "pandas>=2.3.3",
+    "pip>=25.3",
+    "plotly>=6.5.0",
+    "pydot>=4.0.1",
+    "requests>=2.32.5",
+]

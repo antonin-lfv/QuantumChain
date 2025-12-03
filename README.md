@@ -70,9 +70,9 @@ git clone https://github.com/antonin-lfv/QuantumChain.git
 git checkout online_app
 ```
 
-Installer les dépendances
+Installer l'environnement virtuel
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 Si vous êtes sur un OS Unix il faudra possiblement installer graphviz avec apt-get
@@ -108,7 +108,7 @@ brew services restart mosquitto
 Se déplacer dans le dossier *`Blockchain/`* et lancer le fichier main.py
 ```bash
 cd Blockchain
-python3 main.py
+uv run main.py
 ```
 
 Pour reinitialiser la blockchain (sur un OS unix)
@@ -125,5 +125,5 @@ Sinon
 ## Lancer l'interface
 Dans un autre terminal, lancer l'interface Flask
 ```bash
-flask run
+uv run flask run
 ```
