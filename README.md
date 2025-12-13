@@ -83,14 +83,14 @@ git clone https://github.com/antonin-lfv/QuantumChain.git
 ```
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 ## Lancer la blockchain
 
 Se déplacer dans le dossier *`Blockchain/`* et lancer le fichier main.py
 ```bash
-python3 main.py
+uv run main.py
 ```
 
 ## Réinitialiser la simulation
@@ -109,5 +109,6 @@ chmod u+x clean.sh
 
 Dans un autre terminal, lancer l'interface Flask
 ```bash
-flask run
+uv run flask run
 ```
+ 
