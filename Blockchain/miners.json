@@ -1,1 +1,52 @@
-[]
+[
+    {
+        "name": "Miner1",
+        "activated": true,
+        "honesty": true
+    },
+    {
+        "name": "Miner2",
+        "activated": true,
+        "honesty": true
+    },
+    {
+        "name": "Miner3",
+        "activated": true,
+        "honesty": true
+    },
+    {
+        "name": "Miner4",
+        "activated": true,
+        "honesty": true
+    },
+    {
+        "name": "Miner5",
+        "activated": true,
+        "honesty": true
+    },
+    {
+        "name": "Miner6",
+        "activated": true,
+        "honesty": true
+    },
+    {
+        "name": "Miner7",
+        "activated": true,
+        "honesty": true
+    },
+    {
+        "name": "Miner8",
+        "activated": true,
+        "honesty": true
+    },
+    {
+        "name": "Miner9",
+        "activated": true,
+        "honesty": true
+    },
+    {
+        "name": "Miner10",
+        "activated": true,
+        "honesty": true
+    }
+]
